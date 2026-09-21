@@ -1,0 +1,84 @@
+.equity-chart-container {
+  animation: fadeIn 0.4s ease 0.2s forwards;
+  opacity: 0;
+}
+
+.equity-chart-container .card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.equity-chart-title-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.equity-chart-title-left svg {
+  color: var(--accent);
+}
+
+.equity-chart-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.equity-chart-meta span {
+  color: var(--text-muted);
+}
+
+.equity-chart-meta .value {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ── Chart wrapper ── */
+.equity-chart-wrapper {
+  width: 100%;
+  height: 360px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Loading skeleton ── */
+.equity-chart-skeleton {
+  width: 100%;
+  height: 360px;
+  border-radius: var(--radius-md);
+}
+
+/* ── Tooltip ── */
+.chart-tooltip {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.chart-tooltip-date {
+  font-size: 0.6875rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.chart-tooltip-value {
+  font-size: 1rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chart-tooltip-detail {
+  font-size: 0.6875rem;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
