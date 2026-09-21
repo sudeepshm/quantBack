@@ -1,0 +1,135 @@
+.backtest-form {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.backtest-form .card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.backtest-form .card-title svg {
+  color: var(--accent);
+}
+
+/* ── Form Grid ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+/* ── File Upload ── */
+.file-upload-area {
+  grid-column: 1 / -1;
+  border: 1px dashed var(--border-secondary);
+  border-radius: var(--radius-md);
+  padding: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: var(--bg-primary);
+}
+
+.file-upload-area:hover {
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+.file-upload-area.has-file {
+  border-color: var(--accent);
+  border-style: solid;
+  background: var(--accent-muted);
+}
+
+.file-upload-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.file-upload-area.has-file .file-upload-icon {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.file-upload-text {
+  flex: 1;
+  overflow: hidden;
+}
+
+.file-upload-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.file-upload-hint {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  margin-top: 0.125rem;
+}
+
+.file-upload-remove {
+  padding: 0.25rem;
+  background: none;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  transition: all var(--transition-fast);
+}
+
+.file-upload-remove:hover {
+  color: var(--negative);
+  background: var(--negative-muted);
+}
+
+.file-upload-input {
+  display: none;
+}
+
+/* ── Divider ── */
+.form-divider {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--border-primary);
+  margin: 0.25rem 0;
+}
+
+/* ── Submit ── */
+.form-submit {
+  grid-column: 1 / -1;
+  margin-top: 0.25rem;
+}
+
+/* ── Error ── */
+.form-error {
+  grid-column: 1 / -1;
+  background: var(--negative-muted);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.625rem 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--negative);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
