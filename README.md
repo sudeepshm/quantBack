@@ -223,3 +223,16 @@ Each package has a specific responsibility:
 * **Zero Look-Ahead Bias**: Chronological iteration strictly feeds historical data up to $T$.
 * **Financial Precision**: Uses `BigDecimal` for currency and pricing calculations.
 * **Testability**: Every domain unit is thoroughly tested with JUnit 5.
+
+---
+
+# 8. Supported Strategies & Risk Controls
+
+### Built-in Strategies
+* **Single-Asset**: Momentum, Mean Reversion, Moving Average Crossover, Bollinger Bands Breakout, RSI Divergence.
+* **Multi-Asset**: Dual Momentum, Cross-Sectional Momentum.
+
+### Risk Controls
+* **Stop-Loss (%)**: Automatically liquidates positions when drawdowns breach threshold.
+* **Take-Profit (%)**: Locks in profits when gains exceed target levels.
+* **Trailing-Stop (%)**: Dynamically tracks peak prices to protect upside while limiting drawdown.
