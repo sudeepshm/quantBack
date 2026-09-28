@@ -11,8 +11,7 @@ import com.quantback.data.CsvMarketDataLoader;
 import com.quantback.data.MarketData;
 import com.quantback.metrics.PerformanceMetrics;
 import com.quantback.portfolio.PortfolioSnapshot;
-import com.quantback.strategy.MovingAverageStrategy;
-import com.quantback.strategy.Strategy;
+import com.quantback.strategy.*;
 import com.quantback.trade.Trade;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,12 +79,37 @@ public class BacktestService {
     }
 
     private Strategy buildStrategy(BacktestRequestDto req) {
-        String strategyName = req.getStrategy() != null ? req.getStrategy().toLowerCase() : "moving-average";
+        String strategyName = req.getStrategy() != null ? req.getStrategy().toLowerCase().trim() : "moving-average";
         return switch (strategyName) {
             case "moving-average", "moving_average", "ma-crossover" ->
                     new MovingAverageStrategy(
                             req.getFastPeriod() > 0 ? req.getFastPeriod() : 20,
                             req.getSlowPeriod() > 0 ? req.getSlowPeriod() : 50
+                    );
+            case "trend-following", "trend_following", "asset-class-trend-following" ->
+                    new AssetClassTrendFollowingStrategy(
+                            req.getPeriod() > 0 ? req.getPeriod() : 200
+                    );
+            case "tsmom", "time-series-momentum", "time_series_momentum" ->
+                    new TimeSeriesMomentumStrategy(
+                            req.getLookbackPeriod() > 0 ? req.getLookbackPeriod() : 252
+                    );
+            case "52-week-high", "52_week_high", "fifty-two-week-high" ->
+                    new FiftyTwoWeekHighStrategy(
+                            req.getLookbackPeriod() > 0 ? req.getLookbackPeriod() : 252,
+                            req.getThresholdPercent() > 0 ? req.getThresholdPercent() : 5.0,
+                            req.getExitBufferPercent() > 0 ? req.getExitBufferPercent() : 10.0
+                    );
+            case "short-term-reversal", "short_term_reversal", "reversal" ->
+                    new ShortTermReversalStrategy(
+                            req.getPeriod() > 0 ? req.getPeriod() : 5,
+                            req.getOversoldThreshold() > 0 ? req.getOversoldThreshold() : 30.0,
+                            req.getOverboughtThreshold() > 0 ? req.getOverboughtThreshold() : 70.0
+                    );
+            case "turn-of-the-month", "turn_of_the_month", "totm" ->
+                    new TurnOfTheMonthStrategy(
+                            req.getDaysBeforeMonthEnd() > 0 ? req.getDaysBeforeMonthEnd() : 4,
+                            req.getDaysAfterMonthStart() > 0 ? req.getDaysAfterMonthStart() : 3
                     );
             default -> throw new IllegalArgumentException("Unknown strategy: " + req.getStrategy());
         };

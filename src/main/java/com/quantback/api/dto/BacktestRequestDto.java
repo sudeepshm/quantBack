@@ -1,5 +1,8 @@
 package com.quantback.api.dto;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * JSON request body for POST /api/backtests
  */
@@ -15,6 +18,18 @@ public class BacktestRequestDto {
     private int orderQuantity;
     private String startDate;
     private String endDate;
+
+    // Parameters for Quantpedia strategies
+    private int period;
+    private int lookbackPeriod;
+    private double thresholdPercent;
+    private double exitBufferPercent;
+    private double oversoldThreshold;
+    private double overboughtThreshold;
+    private int daysBeforeMonthEnd;
+    private int daysAfterMonthStart;
+
+    private Map<String, Object> extraParams = new HashMap<>();
 
     public BacktestRequestDto() {}
 
@@ -47,4 +62,31 @@ public class BacktestRequestDto {
 
     public String getEndDate() { return endDate; }
     public void setEndDate(String endDate) { this.endDate = endDate; }
+
+    public int getPeriod() { return period; }
+    public void setPeriod(int period) { this.period = period; }
+
+    public int getLookbackPeriod() { return lookbackPeriod; }
+    public void setLookbackPeriod(int lookbackPeriod) { this.lookbackPeriod = lookbackPeriod; }
+
+    public double getThresholdPercent() { return thresholdPercent; }
+    public void setThresholdPercent(double thresholdPercent) { this.thresholdPercent = thresholdPercent; }
+
+    public double getExitBufferPercent() { return exitBufferPercent; }
+    public void setExitBufferPercent(double exitBufferPercent) { this.exitBufferPercent = exitBufferPercent; }
+
+    public double getOversoldThreshold() { return oversoldThreshold; }
+    public void setOversoldThreshold(double oversoldThreshold) { this.oversoldThreshold = oversoldThreshold; }
+
+    public double getOverboughtThreshold() { return overboughtThreshold; }
+    public void setOverboughtThreshold(double overboughtThreshold) { this.overboughtThreshold = overboughtThreshold; }
+
+    public int getDaysBeforeMonthEnd() { return daysBeforeMonthEnd; }
+    public void setDaysBeforeMonthEnd(int daysBeforeMonthEnd) { this.daysBeforeMonthEnd = daysBeforeMonthEnd; }
+
+    public int getDaysAfterMonthStart() { return daysAfterMonthStart; }
+    public void setDaysAfterMonthStart(int daysAfterMonthStart) { this.daysAfterMonthStart = daysAfterMonthStart; }
+
+    public Map<String, Object> getExtraParams() { return extraParams; }
+    public void setExtraParams(Map<String, Object> extraParams) { this.extraParams = extraParams; }
 }
