@@ -4,7 +4,6 @@ import com.quantback.strategy.multi.MultiAssetStrategy;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +21,10 @@ public class MultiAssetBacktestRequest {
     private final LocalDateTime startDate;
     private final LocalDateTime endDate;
 
+    private final double stopLossPercent;
+    private final double takeProfitPercent;
+    private final double trailingStopPercent;
+
     public MultiAssetBacktestRequest(
             List<String> symbols,
             MultiAssetStrategy strategy,
@@ -31,6 +34,21 @@ public class MultiAssetBacktestRequest {
             int orderQuantity,
             LocalDateTime startDate,
             LocalDateTime endDate) {
+        this(symbols, strategy, initialCapital, slippage, transactionFee, orderQuantity, startDate, endDate, 0.0, 0.0, 0.0);
+    }
+
+    public MultiAssetBacktestRequest(
+            List<String> symbols,
+            MultiAssetStrategy strategy,
+            BigDecimal initialCapital,
+            BigDecimal slippage,
+            BigDecimal transactionFee,
+            int orderQuantity,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            double stopLossPercent,
+            double takeProfitPercent,
+            double trailingStopPercent) {
 
         Objects.requireNonNull(symbols, "Symbols cannot be null");
         if (symbols.isEmpty()) {
@@ -64,6 +82,9 @@ public class MultiAssetBacktestRequest {
         this.orderQuantity = orderQuantity;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.stopLossPercent = Math.max(0.0, stopLossPercent);
+        this.takeProfitPercent = Math.max(0.0, takeProfitPercent);
+        this.trailingStopPercent = Math.max(0.0, trailingStopPercent);
     }
 
     public List<String> getSymbols() { return symbols; }
@@ -74,4 +95,7 @@ public class MultiAssetBacktestRequest {
     public int getOrderQuantity() { return orderQuantity; }
     public LocalDateTime getStartDate() { return startDate; }
     public LocalDateTime getEndDate() { return endDate; }
+    public double getStopLossPercent() { return stopLossPercent; }
+    public double getTakeProfitPercent() { return takeProfitPercent; }
+    public double getTrailingStopPercent() { return trailingStopPercent; }
 }

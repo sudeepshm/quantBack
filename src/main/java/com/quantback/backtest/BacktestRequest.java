@@ -20,11 +20,16 @@ public class BacktestRequest {
     private final LocalDateTime startDate;
     private final LocalDateTime endDate;
 
+    // Risk management parameters
+    private final double stopLossPercent;
+    private final double takeProfitPercent;
+    private final double trailingStopPercent;
+
     public BacktestRequest(
             String symbol,
             Strategy strategy,
             BigDecimal initialCapital) {
-        this(symbol, strategy, initialCapital, BigDecimal.ZERO, BigDecimal.ZERO, 10, null, null);
+        this(symbol, strategy, initialCapital, BigDecimal.ZERO, BigDecimal.ZERO, 10, null, null, 0.0, 0.0, 0.0);
     }
 
     public BacktestRequest(
@@ -36,6 +41,21 @@ public class BacktestRequest {
             int orderQuantity,
             LocalDateTime startDate,
             LocalDateTime endDate) {
+        this(symbol, strategy, initialCapital, slippage, transactionFee, orderQuantity, startDate, endDate, 0.0, 0.0, 0.0);
+    }
+
+    public BacktestRequest(
+            String symbol,
+            Strategy strategy,
+            BigDecimal initialCapital,
+            BigDecimal slippage,
+            BigDecimal transactionFee,
+            int orderQuantity,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            double stopLossPercent,
+            double takeProfitPercent,
+            double trailingStopPercent) {
 
         this.symbol = Objects.requireNonNull(symbol, "Symbol cannot be null");
         this.strategy = Objects.requireNonNull(strategy, "Strategy cannot be null");
@@ -53,6 +73,9 @@ public class BacktestRequest {
         this.orderQuantity = orderQuantity;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.stopLossPercent = Math.max(0.0, stopLossPercent);
+        this.takeProfitPercent = Math.max(0.0, takeProfitPercent);
+        this.trailingStopPercent = Math.max(0.0, trailingStopPercent);
     }
 
     public String getSymbol() {
@@ -85,5 +108,17 @@ public class BacktestRequest {
 
     public LocalDateTime getEndDate() {
         return endDate;
+    }
+
+    public double getStopLossPercent() {
+        return stopLossPercent;
+    }
+
+    public double getTakeProfitPercent() {
+        return takeProfitPercent;
+    }
+
+    public double getTrailingStopPercent() {
+        return trailingStopPercent;
     }
 }

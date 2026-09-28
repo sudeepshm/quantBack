@@ -51,7 +51,12 @@ public class BacktestEngine {
 
         // Initialize simulation components
         Portfolio portfolio = new Portfolio(request.getInitialCapital());
-        OrderManager orderManager = new OrderManager(request.getOrderQuantity());
+        OrderManager orderManager = new OrderManager(
+                request.getOrderQuantity(),
+                request.getStopLossPercent(),
+                request.getTakeProfitPercent(),
+                request.getTrailingStopPercent()
+        );
         ExecutionEngine executionEngine = new SimulatedExecutionEngine(
                 request.getSlippage(),
                 request.getTransactionFee()

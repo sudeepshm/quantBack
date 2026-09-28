@@ -1,6 +1,7 @@
 package com.quantback.trade;
 
 import com.quantback.order.OrderSide;
+import com.quantback.order.OrderType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ public class Trade {
     private final String orderId;
     private final String symbol;
     private final OrderSide side;
+    private final OrderType orderType;
     private final int quantity;
     private final BigDecimal price;
     private final BigDecimal fee;
@@ -29,7 +31,19 @@ public class Trade {
             BigDecimal price,
             BigDecimal fee,
             LocalDateTime timestamp) {
-        this(UUID.randomUUID().toString(), orderId, symbol, side, quantity, price, fee, timestamp);
+        this(UUID.randomUUID().toString(), orderId, symbol, side, OrderType.MARKET, quantity, price, fee, timestamp);
+    }
+
+    public Trade(
+            String orderId,
+            String symbol,
+            OrderSide side,
+            OrderType orderType,
+            int quantity,
+            BigDecimal price,
+            BigDecimal fee,
+            LocalDateTime timestamp) {
+        this(UUID.randomUUID().toString(), orderId, symbol, side, orderType, quantity, price, fee, timestamp);
     }
 
     public Trade(
@@ -41,11 +55,25 @@ public class Trade {
             BigDecimal price,
             BigDecimal fee,
             LocalDateTime timestamp) {
+        this(id, orderId, symbol, side, OrderType.MARKET, quantity, price, fee, timestamp);
+    }
+
+    public Trade(
+            String id,
+            String orderId,
+            String symbol,
+            OrderSide side,
+            OrderType orderType,
+            int quantity,
+            BigDecimal price,
+            BigDecimal fee,
+            LocalDateTime timestamp) {
 
         this.id = Objects.requireNonNull(id, "Trade id cannot be null");
         this.orderId = Objects.requireNonNull(orderId, "Order id cannot be null");
         this.symbol = Objects.requireNonNull(symbol, "Symbol cannot be null");
         this.side = Objects.requireNonNull(side, "Side cannot be null");
+        this.orderType = orderType != null ? orderType : OrderType.MARKET;
         this.price = Objects.requireNonNull(price, "Price cannot be null");
         this.fee = Objects.requireNonNull(fee, "Fee cannot be null");
         this.timestamp = Objects.requireNonNull(timestamp, "Timestamp cannot be null");
@@ -79,6 +107,10 @@ public class Trade {
         return side;
     }
 
+    public OrderType getOrderType() {
+        return orderType;
+    }
+
     public int getQuantity() {
         return quantity;
     }
@@ -109,6 +141,7 @@ public class Trade {
                 Objects.equals(orderId, trade.orderId) &&
                 Objects.equals(symbol, trade.symbol) &&
                 side == trade.side &&
+                orderType == trade.orderType &&
                 Objects.equals(price, trade.price) &&
                 Objects.equals(fee, trade.fee) &&
                 Objects.equals(timestamp, trade.timestamp);
@@ -116,7 +149,7 @@ public class Trade {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, orderId, symbol, side, quantity, price, fee, timestamp);
+        return Objects.hash(id, orderId, symbol, side, orderType, quantity, price, fee, timestamp);
     }
 
     @Override
@@ -126,6 +159,7 @@ public class Trade {
                 ", orderId='" + orderId + '\'' +
                 ", symbol='" + symbol + '\'' +
                 ", side=" + side +
+                ", orderType=" + orderType +
                 ", quantity=" + quantity +
                 ", price=" + price +
                 ", fee=" + fee +

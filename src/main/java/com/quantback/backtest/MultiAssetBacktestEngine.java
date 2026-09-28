@@ -63,7 +63,12 @@ public class MultiAssetBacktestEngine {
                 request.getSlippage(),
                 request.getTransactionFee()
         );
-        OrderManager orderManager = new OrderManager(request.getOrderQuantity());
+        OrderManager orderManager = new OrderManager(
+                request.getOrderQuantity(),
+                request.getStopLossPercent(),
+                request.getTakeProfitPercent(),
+                request.getTrailingStopPercent()
+        );
         MultiAssetStrategy strategy = request.getStrategy();
 
         // Map to keep track of current candle index per symbol as we step through time

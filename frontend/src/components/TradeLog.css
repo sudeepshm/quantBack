@@ -128,6 +128,38 @@
   color: var(--negative);
 }
 
+/* ── Order type badge ── */
+.order-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+.order-type-badge.stop_loss {
+  background: var(--negative-muted);
+  color: var(--negative);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.order-type-badge.take_profit {
+  background: var(--positive-muted);
+  color: var(--positive);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+}
+
+.order-type-badge.trailing_stop {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
 /* ── Empty state ── */
 .trade-log-empty {
   padding: 2rem;

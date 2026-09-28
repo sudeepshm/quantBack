@@ -30,6 +30,7 @@ public class BacktestResultDto {
     public static class TradeDto {
         private String timestamp;
         private String side;
+        private String orderType;
         private int quantity;
         private double price;
         private double fee;
@@ -42,6 +43,9 @@ public class BacktestResultDto {
 
         public String getSide() { return side; }
         public void setSide(String side) { this.side = side; }
+
+        public String getOrderType() { return orderType; }
+        public void setOrderType(String orderType) { this.orderType = orderType; }
 
         public int getQuantity() { return quantity; }
         public void setQuantity(int quantity) { this.quantity = quantity; }

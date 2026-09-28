@@ -53,6 +53,7 @@ public class SimulatedExecutionEngine implements ExecutionEngine {
                 order.getId(),
                 order.getSymbol(),
                 order.getSide(),
+                order.getType(),
                 order.getQuantity(),
                 executedPrice,
                 feePerOrder,

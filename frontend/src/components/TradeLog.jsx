@@ -22,6 +22,7 @@ function formatDate(ts) {
 const COLUMNS = [
   { key: 'timestamp', label: 'Date' },
   { key: 'side', label: 'Side' },
+  { key: 'orderType', label: 'Trigger' },
   { key: 'quantity', label: 'Qty' },
   { key: 'price', label: 'Price' },
   { key: 'fee', label: 'Fee' },
@@ -95,6 +96,17 @@ export default function TradeLog({ trades }) {
                   <span className={`side-badge ${trade.side.toLowerCase()}`}>
                     {trade.side === 'BUY' ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
                     {trade.side}
+                  </span>
+                </td>
+                <td>
+                  <span className={`order-type-badge ${(trade.orderType || 'MARKET').toLowerCase()}`}>
+                    {trade.orderType === 'STOP_LOSS'
+                      ? 'Stop Loss'
+                      : trade.orderType === 'TAKE_PROFIT'
+                      ? 'Take Profit'
+                      : trade.orderType === 'TRAILING_STOP'
+                      ? 'Trailing Stop'
+                      : 'Signal'}
                   </span>
                 </td>
                 <td>{trade.quantity}</td>

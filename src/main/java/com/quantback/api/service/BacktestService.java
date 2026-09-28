@@ -71,7 +71,10 @@ public class BacktestService {
                 fee,
                 req.getOrderQuantity() > 0 ? req.getOrderQuantity() : 10,
                 startDate,
-                endDate
+                endDate,
+                req.getStopLossPercent(),
+                req.getTakeProfitPercent(),
+                req.getTrailingStopPercent()
         );
 
         BacktestResult result = engine.run(marketData, backtestRequest);
@@ -156,6 +159,7 @@ public class BacktestService {
             TradeDto td = new TradeDto();
             td.setTimestamp(t.getTimestamp().toString());
             td.setSide(t.getSide().name());
+            td.setOrderType(t.getOrderType().name());
             td.setQuantity(t.getQuantity());
             td.setPrice(t.getPrice().doubleValue());
             td.setFee(t.getFee().doubleValue());

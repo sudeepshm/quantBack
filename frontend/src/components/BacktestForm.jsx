@@ -21,6 +21,9 @@ const DEFAULT_VALUES = {
   orderQuantity: 10,
   slippagePercent: 0.05,
   transactionFeePercent: 0.1,
+  stopLossPercent: 0,
+  takeProfitPercent: 0,
+  trailingStopPercent: 0,
   startDate: '',
   endDate: '',
   ...DEFAULT_STRATEGY_PARAMS['moving-average'],
@@ -427,6 +430,54 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
             min="0"
             step="0.01"
             value={form.transactionFeePercent}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* Risk Controls Header */}
+        <div className="form-divider" />
+
+        {/* Stop Loss */}
+        <div className="form-group">
+          <label htmlFor="bf-sl">Stop Loss (%)</label>
+          <input
+            id="bf-sl"
+            name="stopLossPercent"
+            type="number"
+            min="0"
+            step="0.5"
+            placeholder="0 = disabled"
+            value={form.stopLossPercent === 0 ? '' : form.stopLossPercent}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* Take Profit */}
+        <div className="form-group">
+          <label htmlFor="bf-tp">Take Profit (%)</label>
+          <input
+            id="bf-tp"
+            name="takeProfitPercent"
+            type="number"
+            min="0"
+            step="0.5"
+            placeholder="0 = disabled"
+            value={form.takeProfitPercent === 0 ? '' : form.takeProfitPercent}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* Trailing Stop */}
+        <div className="form-group full-width">
+          <label htmlFor="bf-trail">Trailing Stop (%)</label>
+          <input
+            id="bf-trail"
+            name="trailingStopPercent"
+            type="number"
+            min="0"
+            step="0.5"
+            placeholder="0 = disabled"
+            value={form.trailingStopPercent === 0 ? '' : form.trailingStopPercent}
             onChange={handleChange}
           />
         </div>

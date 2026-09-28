@@ -1,8 +1,11 @@
 package com.quantback.order;
 
 /**
- * Type of order instruction. Initially supports MARKET.
+ * Type of order instruction.
  */
 public enum OrderType {
-    MARKET
+    MARKET,
+    STOP_LOSS,
+    TAKE_PROFIT,
+    TRAILING_STOP
 }

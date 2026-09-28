@@ -31,9 +31,23 @@ public class BacktestRequestDto {
     private int numBuckets;
     private double minConsistencyRatio;
 
+    // Risk controls
+    private double stopLossPercent;
+    private double takeProfitPercent;
+    private double trailingStopPercent;
+
     private Map<String, Object> extraParams = new HashMap<>();
 
     public BacktestRequestDto() {}
+
+    public double getStopLossPercent() { return stopLossPercent; }
+    public void setStopLossPercent(double stopLossPercent) { this.stopLossPercent = stopLossPercent; }
+
+    public double getTakeProfitPercent() { return takeProfitPercent; }
+    public void setTakeProfitPercent(double takeProfitPercent) { this.takeProfitPercent = takeProfitPercent; }
+
+    public double getTrailingStopPercent() { return trailingStopPercent; }
+    public void setTrailingStopPercent(double trailingStopPercent) { this.trailingStopPercent = trailingStopPercent; }
 
     public int getNumBuckets() { return numBuckets; }
     public void setNumBuckets(int numBuckets) { this.numBuckets = numBuckets; }
