@@ -1,18 +1,26 @@
-import { useState, useRef } from 'react'
-import { Play, Upload, X, AlertCircle, Settings2 } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Play, Upload, X, AlertCircle, Settings2, BookOpen } from 'lucide-react'
 import './BacktestForm.css'
+
+const DEFAULT_STRATEGY_PARAMS = {
+  'moving-average': { fastPeriod: 20, slowPeriod: 50 },
+  'trend-following': { period: 200 },
+  'tsmom': { lookbackPeriod: 252 },
+  '52-week-high': { lookbackPeriod: 252, thresholdPercent: 5.0, exitBufferPercent: 10.0 },
+  'short-term-reversal': { period: 5, oversoldThreshold: 30, overboughtThreshold: 70 },
+  'turn-of-the-month': { daysBeforeMonthEnd: 4, daysAfterMonthStart: 3 },
+}
 
 const DEFAULT_VALUES = {
   symbol: 'NIFTY',
   strategy: 'moving-average',
   initialCapital: 100000,
-  fastPeriod: 20,
-  slowPeriod: 50,
   orderQuantity: 10,
   slippagePercent: 0.05,
   transactionFeePercent: 0.1,
   startDate: '',
   endDate: '',
+  ...DEFAULT_STRATEGY_PARAMS['moving-average'],
 }
 
 export default function BacktestForm({ onSubmit, isLoading, strategies }) {
@@ -20,6 +28,20 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
   const [csvFile, setCsvFile] = useState(null)
   const [error, setError] = useState(null)
   const fileRef = useRef(null)
+
+  // Find strategy params from the strategies list
+  const activeStrategy = strategies?.find((s) => s.id === form.strategy)
+
+  const handleStrategyChange = (e) => {
+    const strategyId = e.target.value
+    const defaultsForStrategy = DEFAULT_STRATEGY_PARAMS[strategyId] || {}
+    setForm((prev) => ({
+      ...prev,
+      strategy: strategyId,
+      ...defaultsForStrategy,
+    }))
+    setError(null)
+  }
 
   const handleChange = (e) => {
     const { name, value, type } = e.target
@@ -44,12 +66,23 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
     e.preventDefault()
     setError(null)
 
-    if (form.fastPeriod >= form.slowPeriod) {
+    if (form.initialCapital <= 0) {
+      setError('Initial capital must be greater than 0')
+      return
+    }
+
+    if (form.strategy === 'moving-average' && form.fastPeriod >= form.slowPeriod) {
       setError('Fast MA period must be less than Slow MA period')
       return
     }
-    if (form.initialCapital <= 0) {
-      setError('Initial capital must be greater than 0')
+
+    if (form.strategy === '52-week-high' && form.thresholdPercent >= form.exitBufferPercent) {
+      setError('Exit buffer % must be strictly greater than near-high threshold %')
+      return
+    }
+
+    if (form.strategy === 'short-term-reversal' && form.oversoldThreshold >= form.overboughtThreshold) {
+      setError('Oversold threshold must be strictly less than overbought threshold')
       return
     }
 
@@ -59,9 +92,6 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
       setError(err.message || 'Failed to run backtest')
     }
   }
-
-  // Find strategy params from the strategies list
-  const activeStrategy = strategies?.find((s) => s.id === form.strategy)
 
   return (
     <form className="backtest-form card" onSubmit={handleSubmit}>
@@ -84,10 +114,10 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
           />
         </div>
 
-        {/* Strategy */}
+        {/* Strategy Selector */}
         <div className="form-group">
           <label htmlFor="bf-strategy">Strategy</label>
-          <select id="bf-strategy" name="strategy" value={form.strategy} onChange={handleChange}>
+          <select id="bf-strategy" name="strategy" value={form.strategy} onChange={handleStrategyChange}>
             {strategies && strategies.length > 0 ? (
               strategies.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -95,10 +125,33 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
                 </option>
               ))
             ) : (
-              <option value="moving-average">Moving Average Crossover</option>
+              <>
+                <option value="moving-average">Moving Average Crossover</option>
+                <option value="trend-following">Asset Class Trend-Following (Quantpedia #5 & #77)</option>
+                <option value="tsmom">Time Series Momentum - TSMOM (Quantpedia #75)</option>
+                <option value="52-week-high">52-Week High Breakout (Quantpedia #2)</option>
+                <option value="short-term-reversal">Short-Term Reversal Effect (Quantpedia #67)</option>
+                <option value="turn-of-the-month">Turn of the Month Effect (Quantpedia #78)</option>
+              </>
             )}
           </select>
         </div>
+
+        {/* Strategy Info / Academic Citation Card */}
+        {activeStrategy && (
+          <div className="strategy-info-banner full-width">
+            <div className="strategy-info-header">
+              <BookOpen size={14} />
+              <span>{activeStrategy.category || 'Quantitative Strategy'}</span>
+            </div>
+            <p className="strategy-info-desc">{activeStrategy.description}</p>
+            {activeStrategy.citation && (
+              <p className="strategy-info-citation">
+                <strong>Source:</strong> {activeStrategy.citation}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Initial Capital */}
         <div className="form-group">
@@ -127,31 +180,170 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
           />
         </div>
 
-        {/* Fast MA Period */}
-        <div className="form-group">
-          <label htmlFor="bf-fast">Fast MA Period</label>
-          <input
-            id="bf-fast"
-            name="fastPeriod"
-            type="number"
-            min="1"
-            value={form.fastPeriod}
-            onChange={handleChange}
-          />
-        </div>
+        {/* Dynamic Strategy Parameters */}
+        {form.strategy === 'moving-average' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-fast">Fast MA Period</label>
+              <input
+                id="bf-fast"
+                name="fastPeriod"
+                type="number"
+                min="1"
+                value={form.fastPeriod ?? 20}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-slow">Slow MA Period</label>
+              <input
+                id="bf-slow"
+                name="slowPeriod"
+                type="number"
+                min="2"
+                value={form.slowPeriod ?? 50}
+                onChange={handleChange}
+              />
+            </div>
+          </>
+        )}
 
-        {/* Slow MA Period */}
-        <div className="form-group">
-          <label htmlFor="bf-slow">Slow MA Period</label>
-          <input
-            id="bf-slow"
-            name="slowPeriod"
-            type="number"
-            min="2"
-            value={form.slowPeriod}
-            onChange={handleChange}
-          />
-        </div>
+        {form.strategy === 'trend-following' && (
+          <div className="form-group full-width">
+            <label htmlFor="bf-period">Trend SMA Period (e.g. 200)</label>
+            <input
+              id="bf-period"
+              name="period"
+              type="number"
+              min="2"
+              value={form.period ?? 200}
+              onChange={handleChange}
+            />
+          </div>
+        )}
+
+        {form.strategy === 'tsmom' && (
+          <div className="form-group full-width">
+            <label htmlFor="bf-lookback">Lookback Period (bars, e.g. 252 for 1-yr momentum)</label>
+            <input
+              id="bf-lookback"
+              name="lookbackPeriod"
+              type="number"
+              min="5"
+              value={form.lookbackPeriod ?? 252}
+              onChange={handleChange}
+            />
+          </div>
+        )}
+
+        {form.strategy === '52-week-high' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-lookback52">High Lookback (bars)</label>
+              <input
+                id="bf-lookback52"
+                name="lookbackPeriod"
+                type="number"
+                min="10"
+                value={form.lookbackPeriod ?? 252}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-thresh">Near-High Threshold (%)</label>
+              <input
+                id="bf-thresh"
+                name="thresholdPercent"
+                type="number"
+                step="0.5"
+                min="0.5"
+                value={form.thresholdPercent ?? 5.0}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group full-width">
+              <label htmlFor="bf-exitbuf">Exit Buffer (%)</label>
+              <input
+                id="bf-exitbuf"
+                name="exitBufferPercent"
+                type="number"
+                step="0.5"
+                min="1.0"
+                value={form.exitBufferPercent ?? 10.0}
+                onChange={handleChange}
+              />
+            </div>
+          </>
+        )}
+
+        {form.strategy === 'short-term-reversal' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-rsi-period">RSI Period</label>
+              <input
+                id="bf-rsi-period"
+                name="period"
+                type="number"
+                min="2"
+                value={form.period ?? 5}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-oversold">Oversold Threshold (Buy)</label>
+              <input
+                id="bf-oversold"
+                name="oversoldThreshold"
+                type="number"
+                step="1"
+                min="5"
+                max="50"
+                value={form.oversoldThreshold ?? 30}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group full-width">
+              <label htmlFor="bf-overbought">Overbought Threshold (Sell)</label>
+              <input
+                id="bf-overbought"
+                name="overboughtThreshold"
+                type="number"
+                step="1"
+                min="50"
+                max="95"
+                value={form.overboughtThreshold ?? 70}
+                onChange={handleChange}
+              />
+            </div>
+          </>
+        )}
+
+        {form.strategy === 'turn-of-the-month' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-days-end">Days Before Month End</label>
+              <input
+                id="bf-days-end"
+                name="daysBeforeMonthEnd"
+                type="number"
+                min="1"
+                value={form.daysBeforeMonthEnd ?? 4}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-days-start">Days After Month Start</label>
+              <input
+                id="bf-days-start"
+                name="daysAfterMonthStart"
+                type="number"
+                min="1"
+                value={form.daysAfterMonthStart ?? 3}
+                onChange={handleChange}
+              />
+            </div>
+          </>
+        )}
 
         {/* Slippage */}
         <div className="form-group">

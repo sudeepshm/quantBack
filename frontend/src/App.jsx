@@ -50,14 +50,7 @@ export default function App() {
 
     try {
       const params = {
-        symbol: formData.symbol,
-        strategy: formData.strategy,
-        initialCapital: formData.initialCapital,
-        fastPeriod: formData.fastPeriod,
-        slowPeriod: formData.slowPeriod,
-        orderQuantity: formData.orderQuantity,
-        slippagePercent: formData.slippagePercent,
-        transactionFeePercent: formData.transactionFeePercent,
+        ...formData,
         startDate: formData.startDate || null,
         endDate: formData.endDate || null,
       }
