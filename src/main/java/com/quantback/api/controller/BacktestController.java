@@ -132,6 +132,36 @@ public class BacktestController {
                                 Map.of("name", "daysBeforeMonthEnd", "label", "Days Before Month End", "default", 4, "min", 1),
                                 Map.of("name", "daysAfterMonthStart", "label", "Days After Month Start", "default", 3, "min", 1)
                         )
+                ),
+                Map.of(
+                        "id", "overnight-sentiment",
+                        "name", "Overnight Sentiment Anomaly (Quantpedia #34 & #48)",
+                        "category", "Academic / Quantpedia",
+                        "citation", "Cooper, Dong, Vogel (2008) - Which Moves Markets: Overnight Returns or Daytime Returns?",
+                        "description", "Exploits the overnight sentiment gap. Buys when overnight return (Open_T vs Close_{T-1}) exceeds threshold, sells when gap is deeply negative.",
+                        "params", List.of(
+                                Map.of("name", "thresholdPercent", "label", "Gap Threshold (%)", "default", 0.2, "min", 0.0)
+                        )
+                ),
+                Map.of(
+                        "id", "consistent-momentum",
+                        "name", "Consistent Momentum Strategy (Quantpedia #11)",
+                        "category", "Academic / Quantpedia",
+                        "citation", "Grinblatt & Moskowitz (2004) - Predicting Stock Price Movements From Past Returns: The Role of Consistency",
+                        "description", "Requires trend consistency across multiple sub-period buckets rather than relying on a single outlier spike.",
+                        "params", List.of(
+                                Map.of("name", "lookbackPeriod", "label", "Lookback Bars", "default", 120, "min", 20),
+                                Map.of("name", "numBuckets", "label", "Number of Buckets", "default", 6, "min", 2),
+                                Map.of("name", "minConsistencyRatio", "label", "Min Positive Ratio (e.g. 0.67)", "default", 0.67, "min", 0.1)
+                        )
+                ),
+                Map.of(
+                        "id", "january-barometer",
+                        "name", "January Barometer Effect (Quantpedia #30 & #31)",
+                        "category", "Academic / Quantpedia",
+                        "citation", "Cooper, McConnell, Ovtchinnikov (2006) - The Other January Effect",
+                        "description", "As goes January, so goes the year. Goes long from Feb-Dec if January net return was positive; exits to cash if negative.",
+                        "params", List.of()
                 )
         ));
     }

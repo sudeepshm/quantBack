@@ -9,6 +9,9 @@ const DEFAULT_STRATEGY_PARAMS = {
   '52-week-high': { lookbackPeriod: 252, thresholdPercent: 5.0, exitBufferPercent: 10.0 },
   'short-term-reversal': { period: 5, oversoldThreshold: 30, overboughtThreshold: 70 },
   'turn-of-the-month': { daysBeforeMonthEnd: 4, daysAfterMonthStart: 3 },
+  'overnight-sentiment': { thresholdPercent: 0.2 },
+  'consistent-momentum': { lookbackPeriod: 120, numBuckets: 6, minConsistencyRatio: 0.67 },
+  'january-barometer': {},
 }
 
 const DEFAULT_VALUES = {
@@ -339,6 +342,61 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
                 type="number"
                 min="1"
                 value={form.daysAfterMonthStart ?? 3}
+                onChange={handleChange}
+              />
+            </div>
+          </>
+        )}
+
+        {form.strategy === 'overnight-sentiment' && (
+          <div className="form-group full-width">
+            <label htmlFor="bf-gap-thresh">Overnight Gap Threshold (%)</label>
+            <input
+              id="bf-gap-thresh"
+              name="thresholdPercent"
+              type="number"
+              step="0.05"
+              min="0"
+              value={form.thresholdPercent ?? 0.2}
+              onChange={handleChange}
+            />
+          </div>
+        )}
+
+        {form.strategy === 'consistent-momentum' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-cm-lookback">Lookback Bars</label>
+              <input
+                id="bf-cm-lookback"
+                name="lookbackPeriod"
+                type="number"
+                min="20"
+                value={form.lookbackPeriod ?? 120}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-cm-buckets">Number of Buckets</label>
+              <input
+                id="bf-cm-buckets"
+                name="numBuckets"
+                type="number"
+                min="2"
+                value={form.numBuckets ?? 6}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group full-width">
+              <label htmlFor="bf-cm-ratio">Min Positive Ratio (e.g. 0.67 for 67%)</label>
+              <input
+                id="bf-cm-ratio"
+                name="minConsistencyRatio"
+                type="number"
+                step="0.05"
+                min="0.1"
+                max="1.0"
+                value={form.minConsistencyRatio ?? 0.67}
                 onChange={handleChange}
               />
             </div>

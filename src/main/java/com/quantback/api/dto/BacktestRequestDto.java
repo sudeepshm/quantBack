@@ -28,10 +28,18 @@ public class BacktestRequestDto {
     private double overboughtThreshold;
     private int daysBeforeMonthEnd;
     private int daysAfterMonthStart;
+    private int numBuckets;
+    private double minConsistencyRatio;
 
     private Map<String, Object> extraParams = new HashMap<>();
 
     public BacktestRequestDto() {}
+
+    public int getNumBuckets() { return numBuckets; }
+    public void setNumBuckets(int numBuckets) { this.numBuckets = numBuckets; }
+
+    public double getMinConsistencyRatio() { return minConsistencyRatio; }
+    public void setMinConsistencyRatio(double minConsistencyRatio) { this.minConsistencyRatio = minConsistencyRatio; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }

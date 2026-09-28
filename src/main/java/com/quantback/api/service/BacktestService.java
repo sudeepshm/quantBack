@@ -111,6 +111,18 @@ public class BacktestService {
                             req.getDaysBeforeMonthEnd() > 0 ? req.getDaysBeforeMonthEnd() : 4,
                             req.getDaysAfterMonthStart() > 0 ? req.getDaysAfterMonthStart() : 3
                     );
+            case "overnight-sentiment", "overnight_sentiment", "overnight" ->
+                    new OvernightSentimentStrategy(
+                            req.getThresholdPercent() > 0 ? req.getThresholdPercent() : 0.2
+                    );
+            case "consistent-momentum", "consistent_momentum" ->
+                    new ConsistentMomentumStrategy(
+                            req.getLookbackPeriod() > 0 ? req.getLookbackPeriod() : 120,
+                            req.getNumBuckets() > 1 ? req.getNumBuckets() : 6,
+                            req.getMinConsistencyRatio() > 0 ? req.getMinConsistencyRatio() : 0.67
+                    );
+            case "january-barometer", "january_barometer", "january-effect" ->
+                    new JanuaryBarometerStrategy();
             default -> throw new IllegalArgumentException("Unknown strategy: " + req.getStrategy());
         };
     }
