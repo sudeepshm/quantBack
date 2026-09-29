@@ -126,6 +126,21 @@ public class BacktestService {
                     );
             case "january-barometer", "january_barometer", "january-effect" ->
                     new JanuaryBarometerStrategy();
+            case "halloween-effect", "halloween_effect", "halloween", "sell-in-may" ->
+                    new HalloweenEffectStrategy(
+                            req.getEntryMonth() > 0 ? req.getEntryMonth() : 11,
+                            req.getExitMonth() > 0 ? req.getExitMonth() : 5
+                    );
+            case "bollinger-bands", "bollinger_bands", "bollinger" ->
+                    new BollingerBandsStrategy(
+                            req.getPeriod() > 0 ? req.getPeriod() : 20,
+                            req.getStdDevMultiplier() > 0 ? req.getStdDevMultiplier() : 2.0
+                    );
+            case "day-of-the-week", "day_of_the_week", "weekend-effect" ->
+                    new DayOfTheWeekStrategy(
+                            req.getEntryDayOfWeek() > 0 ? req.getEntryDayOfWeek() : 2,
+                            req.getExitDayOfWeek() > 0 ? req.getExitDayOfWeek() : 5
+                    );
             default -> throw new IllegalArgumentException("Unknown strategy: " + req.getStrategy());
         };
     }

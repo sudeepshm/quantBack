@@ -1,210 +1,207 @@
-import { useEffect, useRef, useState } from 'react'
-import { createChart, ColorType } from 'lightweight-charts'
-import { LineChart } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { LineChart, Info } from 'lucide-react'
 import './EquityChart.css'
 
-function formatCurrency(value) {
+function rng(a) {
+  return function () {
+    a |= 0
+    a = (a + 0x6d2b79f5) | 0
+    let t = Math.imul(a ^ (a >>> 15), 1 | a)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+function gauss(f) {
+  return Math.sqrt(-2 * Math.log(f() + 1e-9)) * Math.cos(2 * Math.PI * f())
+}
+
+function formatCurrency(val) {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
     maximumFractionDigits: 0,
-  }).format(value)
-}
-
-function parseTimestamp(ts) {
-  // The backend sends timestamps like "2023-01-02T00:00" or "2023-01-02T09:15"
-  // Lightweight Charts needs { year, month, day } or a UNIX timestamp
-  const d = new Date(ts)
-  return {
-    year: d.getFullYear(),
-    month: d.getMonth() + 1,
-    day: d.getDate(),
-  }
+  }).format(val)
 }
 
 export default function EquityChart({ equityCurve, isLoading, symbol }) {
-  const chartContainerRef = useRef(null)
-  const chartRef = useRef(null)
-  const [tooltip, setTooltip] = useState(null)
+  const [hoverIndex, setHoverIndex] = useState(null)
 
-  useEffect(() => {
-    if (!equityCurve || equityCurve.length === 0 || !chartContainerRef.current) return
+  // 1. Generate fallback / demo curve if no backtest result yet
+  const sampleData = useMemo(() => {
+    const f = rng(7)
+    const D = 400
+    const s = [100000]
+    const b = [100000]
+    const dates = []
+    let baseDate = new Date('2024-01-01')
 
-    // Clean up previous chart
-    if (chartRef.current) {
-      chartRef.current.remove()
-      chartRef.current = null
+    for (let i = 0; i < D; i++) {
+      const z = gauss(f)
+      const z2 = 0.55 * z + 0.83 * gauss(f)
+      const rs = 0.0011 + 0.0085 * z
+      const rb = 0.0004 + 0.0105 * z2
+      s.push(s[i] * (1 + rs))
+      b.push(b[i] * (1 + rb))
+
+      const d = new Date(baseDate)
+      d.setDate(d.getDate() + i)
+      dates.push(d.toISOString().slice(0, 10))
     }
+    dates.push(new Date(baseDate.setDate(baseDate.getDate() + D)).toISOString().slice(0, 10))
+    return { s, b, dates, isSample: true }
+  }, [])
 
-    const container = chartContainerRef.current
-
-    const chart = createChart(container, {
-      width: container.clientWidth,
-      height: 360,
-      layout: {
-        background: { type: ColorType.Solid, color: '#0a0e17' },
-        textColor: '#64748b',
-        fontFamily: "'Inter', sans-serif",
-        fontSize: 11,
-      },
-      grid: {
-        vertLines: { color: 'rgba(30, 41, 59, 0.5)' },
-        horzLines: { color: 'rgba(30, 41, 59, 0.5)' },
-      },
-      crosshair: {
-        mode: 0,
-        vertLine: {
-          color: 'rgba(0, 212, 170, 0.3)',
-          width: 1,
-          style: 2,
-          labelBackgroundColor: '#1a2235',
-        },
-        horzLine: {
-          color: 'rgba(0, 212, 170, 0.3)',
-          width: 1,
-          style: 2,
-          labelBackgroundColor: '#1a2235',
-        },
-      },
-      rightPriceScale: {
-        borderColor: '#1e293b',
-        scaleMargins: { top: 0.1, bottom: 0.05 },
-      },
-      timeScale: {
-        borderColor: '#1e293b',
-        timeVisible: false,
-      },
-      handleScroll: { vertTouchDrag: false },
-    })
-
-    chartRef.current = chart
-
-    // Area series for equity curve
-    const series = chart.addAreaSeries({
-      lineColor: '#00d4aa',
-      lineWidth: 2,
-      topColor: 'rgba(0, 212, 170, 0.28)',
-      bottomColor: 'rgba(0, 212, 170, 0.02)',
-      crosshairMarkerBackgroundColor: '#00d4aa',
-      crosshairMarkerBorderColor: '#00d4aa',
-      crosshairMarkerRadius: 5,
-    })
-
-    // Deduplicate by date string to avoid lightweight-charts errors
-    const seen = new Set()
-    const data = equityCurve
-      .map((snap) => {
-        const time = parseTimestamp(snap.timestamp)
-        const key = `${time.year}-${time.month}-${time.day}`
-        if (seen.has(key)) return null
-        seen.add(key)
-        return { time, value: snap.totalValue }
-      })
-      .filter(Boolean)
-
-    series.setData(data)
-    chart.timeScale().fitContent()
-
-    // Crosshair tooltip
-    chart.subscribeCrosshairMove((param) => {
-      if (!param.time || !param.seriesData.size) {
-        setTooltip(null)
-        return
-      }
-
-      const price = param.seriesData.get(series)
-      if (!price) {
-        setTooltip(null)
-        return
-      }
-
-      // Find matching snapshot for extra detail
-      const t = param.time
-      const dateStr = `${t.year}-${String(t.month).padStart(2, '0')}-${String(t.day).padStart(2, '0')}`
-      const snap = equityCurve.find((s) => s.timestamp.startsWith(dateStr))
-
-      setTooltip({
-        date: dateStr,
-        value: price.value,
-        cash: snap?.cash,
-        pnl: snap ? snap.realizedPnl + snap.unrealizedPnl : null,
-      })
-    })
-
-    // Resize observer
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        chart.applyOptions({ width: entry.contentRect.width })
-      }
-    })
-    resizeObserver.observe(container)
-
-    return () => {
-      resizeObserver.disconnect()
-      chart.remove()
-      chartRef.current = null
+  // 2. Prepare plot data
+  const plotData = useMemo(() => {
+    if (equityCurve && equityCurve.length > 1) {
+      const s = equityCurve.map((d) => d.totalValue)
+      const initial = s[0]
+      // Benchmark: flat initial capital or cash trajectory
+      const b = equityCurve.map(() => initial)
+      const dates = equityCurve.map((d) => d.timestamp?.slice(0, 10) || '')
+      return { s, b, dates, isSample: false }
     }
-  }, [equityCurve])
+    return sampleData
+  }, [equityCurve, sampleData])
 
-  if (isLoading) {
-    return (
-      <div className="equity-chart-container card">
-        <div className="card-title">
-          <div className="equity-chart-title-left">
-            <LineChart size={16} />
-            Equity Curve
-          </div>
-        </div>
-        <div className="equity-chart-skeleton skeleton" />
-      </div>
-    )
+  const { s, b, dates, isSample } = plotData
+  const N = s.length
+  const allVals = s.concat(b)
+  const mx = Math.max(...allVals)
+  const mn = Math.min(...allVals)
+  const range = mx - mn || 1
+
+  function getX(i) {
+    return ((i / (N - 1)) * 800).toFixed(1)
   }
 
-  if (!equityCurve || equityCurve.length === 0) return null
+  function getY(v) {
+    return (250 - ((v - mn) / range) * 220).toFixed(1)
+  }
 
-  const firstVal = equityCurve[0]?.totalValue || 0
-  const lastVal = equityCurve[equityCurve.length - 1]?.totalValue || 0
-  const changePct = firstVal > 0 ? ((lastVal - firstVal) / firstVal) * 100 : 0
+  function getPath(arr) {
+    return arr
+      .map((val, i) => `${i === 0 ? 'M' : 'L'}${getX(i)} ${getY(val)}`)
+      .join(' ')
+  }
+
+  const pathStrategy = getPath(s)
+  const pathBenchmark = getPath(b)
+
+  const activeIndex = hoverIndex !== null ? hoverIndex : N - 1
+  const activeVal = s[activeIndex]
+  const activeDate = dates[activeIndex]
+  const activeX = getX(activeIndex)
+  const activeY = getY(activeVal)
 
   return (
-    <div className="equity-chart-container card">
-      <div className="card-title">
-        <div className="equity-chart-title-left">
-          <LineChart size={16} />
-          Equity Curve {symbol && `— ${symbol}`}
+    <div className="box equity-box">
+      <div className="equity-header">
+        <div>
+          <h3 className="d card-title">
+            <LineChart size={18} />
+            Equity Curve & Benchmark
+          </h3>
+          <p className="note" style={{ margin: 0 }}>
+            {isSample
+              ? 'Sample strategy curve simulating daily walk-forward execution.'
+              : `Realized equity trajectory for ${symbol || 'strategy'} vs baseline initial capital.`}
+          </p>
         </div>
-        <div className="equity-chart-meta">
-          <span>
-            Peak: <span className="value">{formatCurrency(Math.max(...equityCurve.map((s) => s.totalValue)))}</span>
-          </span>
-          <span>
-            Change:{' '}
-            <span className="value" style={{ color: changePct >= 0 ? 'var(--positive)' : 'var(--negative)' }}>
-              {changePct >= 0 ? '+' : ''}
-              {changePct.toFixed(2)}%
-            </span>
-          </span>
-        </div>
-      </div>
 
-      <div className="equity-chart-wrapper" ref={chartContainerRef}>
-        {tooltip && (
-          <div className="chart-tooltip">
-            <div className="chart-tooltip-date">{tooltip.date}</div>
-            <div className="chart-tooltip-value">{formatCurrency(tooltip.value)}</div>
-            {tooltip.cash != null && (
-              <div className="chart-tooltip-detail">Cash: {formatCurrency(tooltip.cash)}</div>
-            )}
-            {tooltip.pnl != null && (
-              <div
-                className="chart-tooltip-detail"
-                style={{ color: tooltip.pnl >= 0 ? 'var(--positive)' : 'var(--negative)' }}
-              >
-                P&L: {formatCurrency(tooltip.pnl)}
-              </div>
-            )}
+        {activeVal !== undefined && (
+          <div className="equity-hover-val">
+            <span className="hover-date">{activeDate}</span>
+            <span className="hover-price">{formatCurrency(activeVal)}</span>
           </div>
         )}
+      </div>
+
+      <div className="svg-container">
+        <svg
+          viewBox="0 0 800 280"
+          role="img"
+          aria-label="Strategy equity curve compared with baseline"
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect()
+            const mouseX = Math.max(0, Math.min(e.clientX - rect.left, rect.width))
+            const ratio = mouseX / rect.width
+            const idx = Math.min(N - 1, Math.max(0, Math.round(ratio * (N - 1))))
+            setHoverIndex(idx)
+          }}
+          onMouseLeave={() => setHoverIndex(null)}
+        >
+          {/* Grid lines */}
+          {[0, 1, 2, 3].map((k) => (
+            <line
+              key={k}
+              x1={0}
+              x2={800}
+              y1={25 + k * 72}
+              y2={25 + k * 72}
+              stroke="var(--ink)"
+              strokeOpacity="0.12"
+              strokeDasharray="4 4"
+            />
+          ))}
+
+          {/* Benchmark curve */}
+          <path
+            d={pathBenchmark}
+            fill="none"
+            stroke="var(--ink)"
+            strokeWidth="2.5"
+            strokeOpacity="0.45"
+            strokeDasharray={isSample ? 'none' : '5 5'}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+
+          {/* Strategy curve */}
+          <path
+            d={pathStrategy}
+            fill="none"
+            stroke="#FF4FA3"
+            strokeWidth="4.5"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+
+          {/* Active pointer marker */}
+          {activeX && (
+            <>
+              <line
+                x1={activeX}
+                x2={activeX}
+                y1={10}
+                y2={260}
+                stroke="var(--ink)"
+                strokeOpacity="0.25"
+                strokeWidth="1.5"
+              />
+              <circle
+                cx={activeX}
+                cy={activeY}
+                r={6}
+                fill="#FF4FA3"
+                stroke="var(--ink)"
+                strokeWidth={2.5}
+              />
+            </>
+          )}
+        </svg>
+      </div>
+
+      <div className="leg">
+        <span>
+          <i style={{ background: 'var(--pink)' }} />
+          Strategy Portfolio Value
+        </span>
+        <span>
+          <i style={{ background: 'var(--ink)', opacity: 0.45 }} />
+          Benchmark Baseline
+        </span>
       </div>
     </div>
   )

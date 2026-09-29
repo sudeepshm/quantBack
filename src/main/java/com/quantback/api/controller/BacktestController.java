@@ -162,6 +162,39 @@ public class BacktestController {
                         "citation", "Cooper, McConnell, Ovtchinnikov (2006) - The Other January Effect",
                         "description", "As goes January, so goes the year. Goes long from Feb-Dec if January net return was positive; exits to cash if negative.",
                         "params", List.of()
+                ),
+                Map.of(
+                        "id", "halloween-effect",
+                        "name", "The Halloween Effect / Sell in May (Quantpedia #49)",
+                        "category", "Academic / Quantpedia",
+                        "citation", "Bouman & Jacobsen (2002) - The Halloween Indicator, 'Sell in May and Go Away'",
+                        "description", "Invests in equities during the winter months (November to April) and shifts to cash during summer months (May to October).",
+                        "params", List.of(
+                                Map.of("name", "entryMonth", "label", "Entry Month (1-12)", "default", 11, "min", 1, "max", 12),
+                                Map.of("name", "exitMonth", "label", "Exit Month (1-12)", "default", 5, "min", 1, "max", 12)
+                        )
+                ),
+                Map.of(
+                        "id", "bollinger-bands",
+                        "name", "Bollinger Bands Mean Reversion (Quantpedia #22 & #63)",
+                        "category", "Quantitative / Technical",
+                        "citation", "John Bollinger (2001) - Bollinger on Bollinger Bands; Leung & Chong (2003)",
+                        "description", "Buys oversold dips when close price breaches below the lower band (SMA - k*sigma); sells when price mean-reverts to SMA.",
+                        "params", List.of(
+                                Map.of("name", "period", "label", "Bands Period", "default", 20, "min", 2),
+                                Map.of("name", "stdDevMultiplier", "label", "Std Dev Multiplier (k)", "default", 2.0, "min", 0.5, "step", 0.5)
+                        )
+                ),
+                Map.of(
+                        "id", "day-of-the-week",
+                        "name", "Day-of-the-Week / Weekend Effect (Quantpedia #16)",
+                        "category", "Academic / Quantpedia",
+                        "citation", "French (1980) & Gibbons & Hess (1981) - Stock Returns and the Weekend Effect",
+                        "description", "Captures intra-week seasonality. Avoids Monday downside by holding Tuesday through Friday and moving to cash over weekends.",
+                        "params", List.of(
+                                Map.of("name", "entryDayOfWeek", "label", "Entry Day (1=Mon..7=Sun)", "default", 2, "min", 1, "max", 7),
+                                Map.of("name", "exitDayOfWeek", "label", "Exit Day (1=Mon..7=Sun)", "default", 5, "min", 1, "max", 7)
+                        )
                 )
         ));
     }

@@ -30,6 +30,11 @@ public class BacktestRequestDto {
     private int daysAfterMonthStart;
     private int numBuckets;
     private double minConsistencyRatio;
+    private int entryMonth;
+    private int exitMonth;
+    private double stdDevMultiplier;
+    private int entryDayOfWeek;
+    private int exitDayOfWeek;
 
     // Risk controls
     private double stopLossPercent;
@@ -108,6 +113,21 @@ public class BacktestRequestDto {
 
     public int getDaysAfterMonthStart() { return daysAfterMonthStart; }
     public void setDaysAfterMonthStart(int daysAfterMonthStart) { this.daysAfterMonthStart = daysAfterMonthStart; }
+
+    public int getEntryMonth() { return entryMonth; }
+    public void setEntryMonth(int entryMonth) { this.entryMonth = entryMonth; }
+
+    public int getExitMonth() { return exitMonth; }
+    public void setExitMonth(int exitMonth) { this.exitMonth = exitMonth; }
+
+    public double getStdDevMultiplier() { return stdDevMultiplier; }
+    public void setStdDevMultiplier(double stdDevMultiplier) { this.stdDevMultiplier = stdDevMultiplier; }
+
+    public int getEntryDayOfWeek() { return entryDayOfWeek; }
+    public void setEntryDayOfWeek(int entryDayOfWeek) { this.entryDayOfWeek = entryDayOfWeek; }
+
+    public int getExitDayOfWeek() { return exitDayOfWeek; }
+    public void setExitDayOfWeek(int exitDayOfWeek) { this.exitDayOfWeek = exitDayOfWeek; }
 
     public Map<String, Object> getExtraParams() { return extraParams; }
     public void setExtraParams(Map<String, Object> extraParams) { this.extraParams = extraParams; }

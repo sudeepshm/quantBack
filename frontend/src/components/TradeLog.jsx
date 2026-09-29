@@ -61,7 +61,7 @@ export default function TradeLog({ trades }) {
   if (!trades || trades.length === 0) return null
 
   return (
-    <div className="trade-log-container card">
+    <div className="trade-log-container box" style={{ marginTop: 24 }}>
       <div className="card-title">
         <div className="trade-log-title-left">
           <List size={16} />

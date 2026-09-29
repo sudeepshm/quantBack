@@ -229,8 +229,23 @@ Each package has a specific responsibility:
 # 8. Supported Strategies & Risk Controls
 
 ### Built-in Strategies
-* **Single-Asset**: Momentum, Mean Reversion, Moving Average Crossover, Bollinger Bands Breakout, RSI Divergence.
-* **Multi-Asset**: Dual Momentum, Cross-Sectional Momentum.
+* **Single-Asset & Quantpedia Strategies**:
+  * **Moving Average Crossover**: Golden Cross & Death Cross trend execution.
+  * **Asset Class Trend-Following (Quantpedia #5 & #77)**: Mebane Faber (2007) tactical trend filter.
+  * **Time Series Momentum - TSMOM (Quantpedia #75)**: Moskowitz, Ooi, Pedersen (2012) 12-month momentum.
+  * **52-Week High Breakout (Quantpedia #2)**: George & Hwang (2004) near-high momentum.
+  * **Short-Term Reversal Effect (Quantpedia #67)**: Jegadeesh & Lehmann (1990) short-term RSI mean reversion.
+  * **Turn of the Month Effect (Quantpedia #78)**: Lakonishok & Smidt (1988) calendar turn-of-month window.
+  * **Overnight Sentiment Anomaly (Quantpedia #34 & #48)**: Cooper, Dong, Vogel (2008) open-to-close vs overnight gaps.
+  * **Consistent Momentum (Quantpedia #11)**: Grinblatt & Moskowitz (2004) multi-bucket return consistency.
+  * **January Barometer Effect (Quantpedia #30 & #31)**: Cooper, McConnell, Ovtchinnikov (2006) annual return barometer.
+  * **The Halloween Effect / Sell in May (Quantpedia #49)**: Bouman & Jacobsen (2002) winter vs summer equity seasonality.
+  * **Bollinger Bands Mean Reversion (Quantpedia #22 & #63)**: John Bollinger (2001) / Leung & Chong (2003) volatility envelope mean reversion.
+  * **Day-of-the-Week / Weekend Effect (Quantpedia #16)**: French (1980) & Gibbons & Hess (1981) intra-week seasonality.
+* **Multi-Asset Strategies**:
+  * **Dual Momentum (Quantpedia #35)**: Gary Antonacci (2012) relative & absolute momentum asset rotation.
+  * **Pairs Trading (Quantpedia #51)**: Gatev, Goetzmann, Rouwenhorst (2006) normalized distance statistical arbitrage.
+  * **Sector Momentum (Quantpedia #64)**: Cross-sectional top-quartile sector rotation.
 
 ### Risk Controls
 * **Stop-Loss (%)**: Automatically liquidates positions when drawdowns breach threshold.

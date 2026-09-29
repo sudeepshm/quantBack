@@ -1,84 +1,59 @@
-.equity-chart-container {
-  animation: fadeIn 0.4s ease 0.2s forwards;
-  opacity: 0;
-}
-
-.equity-chart-container .card-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.equity-chart-title-left {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.equity-chart-title-left svg {
-  color: var(--accent);
-}
-
-.equity-chart-meta {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-size: 0.75rem;
-  font-family: var(--font-mono);
-}
-
-.equity-chart-meta span {
-  color: var(--text-muted);
-}
-
-.equity-chart-meta .value {
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-/* ── Chart wrapper ── */
-.equity-chart-wrapper {
-  width: 100%;
-  height: 360px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  position: relative;
-}
-
-/* ── Loading skeleton ── */
-.equity-chart-skeleton {
-  width: 100%;
-  height: 360px;
-  border-radius: var(--radius-md);
-}
-
-/* ── Tooltip ── */
-.chart-tooltip {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  pointer-events: none;
-  z-index: 10;
+.equity-box {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
 }
 
-.chart-tooltip-date {
-  font-size: 0.6875rem;
-  font-family: var(--font-mono);
-  color: var(--text-muted);
+.equity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.chart-tooltip-value {
-  font-size: 1rem;
-  font-family: var(--font-mono);
-  font-weight: 600;
-  color: var(--text-primary);
+.equity-box .card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  color: var(--fg);
 }
 
-.chart-tooltip-detail {
-  font-size: 0.6875rem;
-  font-family: var(--font-mono);
-  color: var(--text-secondary);
+.equity-hover-val {
+  background: var(--yel);
+  color: #16081F;
+  border: 2px solid #16081F;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 2px 2px 0 #16081F;
+}
+
+.hover-date {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.hover-price {
+  font-size: 14px;
+  font-family: 'Unbounded', sans-serif;
+}
+
+.svg-container {
+  width: 100%;
+  background: var(--card);
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.svg-container svg {
+  cursor: crosshair;
 }

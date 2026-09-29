@@ -12,6 +12,9 @@ const DEFAULT_STRATEGY_PARAMS = {
   'overnight-sentiment': { thresholdPercent: 0.2 },
   'consistent-momentum': { lookbackPeriod: 120, numBuckets: 6, minConsistencyRatio: 0.67 },
   'january-barometer': {},
+  'halloween-effect': { entryMonth: 11, exitMonth: 5 },
+  'bollinger-bands': { period: 20, stdDevMultiplier: 2.0 },
+  'day-of-the-week': { entryDayOfWeek: 2, exitDayOfWeek: 5 },
 }
 
 const DEFAULT_VALUES = {
@@ -92,6 +95,21 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
       return
     }
 
+    if (form.strategy === 'halloween-effect' && Number(form.entryMonth) === Number(form.exitMonth)) {
+      setError('Entry month and exit month cannot be identical')
+      return
+    }
+
+    if (form.strategy === 'bollinger-bands' && form.period < 2) {
+      setError('Bollinger Bands period must be at least 2')
+      return
+    }
+
+    if (form.strategy === 'day-of-the-week' && Number(form.entryDayOfWeek) > Number(form.exitDayOfWeek)) {
+      setError('Entry day cannot be after exit day')
+      return
+    }
+
     try {
       await onSubmit(form, csvFile)
     } catch (err) {
@@ -100,9 +118,9 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
   }
 
   return (
-    <form className="backtest-form card" onSubmit={handleSubmit}>
+    <form className="backtest-form box" onSubmit={handleSubmit}>
       <div className="card-title">
-        <Settings2 size={16} />
+        <Settings2 size={18} />
         Backtest Configuration
       </div>
 
@@ -138,6 +156,12 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
                 <option value="52-week-high">52-Week High Breakout (Quantpedia #2)</option>
                 <option value="short-term-reversal">Short-Term Reversal Effect (Quantpedia #67)</option>
                 <option value="turn-of-the-month">Turn of the Month Effect (Quantpedia #78)</option>
+                <option value="overnight-sentiment">Overnight Sentiment Anomaly (Quantpedia #34 & #48)</option>
+                <option value="consistent-momentum">Consistent Momentum Strategy (Quantpedia #11)</option>
+                <option value="january-barometer">January Barometer Effect (Quantpedia #30 & #31)</option>
+                <option value="halloween-effect">The Halloween Effect / Sell in May (Quantpedia #49)</option>
+                <option value="bollinger-bands">Bollinger Bands Mean Reversion (Quantpedia #22 & #63)</option>
+                <option value="day-of-the-week">Day-of-the-Week / Weekend Effect (Quantpedia #16)</option>
               </>
             )}
           </select>
@@ -406,6 +430,118 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
           </>
         )}
 
+        {form.strategy === 'halloween-effect' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-entry-month">Entry Month (Buy)</label>
+              <select
+                id="bf-entry-month"
+                name="entryMonth"
+                value={form.entryMonth ?? 11}
+                onChange={handleChange}
+              >
+                <option value={1}>1 - January</option>
+                <option value={2}>2 - February</option>
+                <option value={3}>3 - March</option>
+                <option value={4}>4 - April</option>
+                <option value={5}>5 - May</option>
+                <option value={6}>6 - June</option>
+                <option value={7}>7 - July</option>
+                <option value={8}>8 - August</option>
+                <option value={9}>9 - September</option>
+                <option value={10}>10 - October</option>
+                <option value={11}>11 - November</option>
+                <option value={12}>12 - December</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-exit-month">Exit Month (Sell / Cash)</label>
+              <select
+                id="bf-exit-month"
+                name="exitMonth"
+                value={form.exitMonth ?? 5}
+                onChange={handleChange}
+              >
+                <option value={1}>1 - January</option>
+                <option value={2}>2 - February</option>
+                <option value={3}>3 - March</option>
+                <option value={4}>4 - April</option>
+                <option value={5}>5 - May</option>
+                <option value={6}>6 - June</option>
+                <option value={7}>7 - July</option>
+                <option value={8}>8 - August</option>
+                <option value={9}>9 - September</option>
+                <option value={10}>10 - October</option>
+                <option value={11}>11 - November</option>
+                <option value={12}>12 - December</option>
+              </select>
+            </div>
+          </>
+        )}
+
+        {form.strategy === 'bollinger-bands' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-bb-period">Bands SMA Period</label>
+              <input
+                id="bf-bb-period"
+                name="period"
+                type="number"
+                min="2"
+                value={form.period ?? 20}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-bb-std">Std Dev Multiplier (k)</label>
+              <input
+                id="bf-bb-std"
+                name="stdDevMultiplier"
+                type="number"
+                step="0.1"
+                min="0.1"
+                value={form.stdDevMultiplier ?? 2.0}
+                onChange={handleChange}
+              />
+            </div>
+          </>
+        )}
+
+        {form.strategy === 'day-of-the-week' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-entry-day">Entry Day of Week</label>
+              <select
+                id="bf-entry-day"
+                name="entryDayOfWeek"
+                value={form.entryDayOfWeek ?? 2}
+                onChange={handleChange}
+              >
+                <option value={1}>Monday</option>
+                <option value={2}>Tuesday</option>
+                <option value={3}>Wednesday</option>
+                <option value={4}>Thursday</option>
+                <option value={5}>Friday</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-exit-day">Exit Day of Week</label>
+              <select
+                id="bf-exit-day"
+                name="exitDayOfWeek"
+                value={form.exitDayOfWeek ?? 5}
+                onChange={handleChange}
+              >
+                <option value={1}>Monday</option>
+                <option value={2}>Tuesday</option>
+                <option value={3}>Wednesday</option>
+                <option value={4}>Thursday</option>
+                <option value={5}>Friday</option>
+              </select>
+            </div>
+          </>
+        )}
+
         {/* Slippage */}
         <div className="form-group">
           <label htmlFor="bf-slip">Slippage (%)</label>
@@ -550,16 +686,16 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
 
         {/* Submit */}
         <div className="form-submit">
-          <button type="submit" className="btn-primary" disabled={isLoading}>
+          <button type="submit" className="btn" style={{ width: '100%' }} disabled={isLoading}>
             {isLoading ? (
               <>
                 <span className="spinner" />
-                Running Backtest...
+                Simulating Historical Trades...
               </>
             ) : (
               <>
-                <Play size={16} />
-                Run Backtest
+                <Play size={18} fill="#16081F" />
+                Run Backtest Engine
               </>
             )}
           </button>

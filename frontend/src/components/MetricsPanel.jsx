@@ -1,13 +1,4 @@
-import {
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
-  Target,
-  ArrowRight,
-  Percent,
-  Scale,
-  Activity,
-} from 'lucide-react'
+import { Activity, ArrowRight } from 'lucide-react'
 import './MetricsPanel.css'
 
 function formatCurrency(value) {
@@ -30,104 +21,96 @@ function formatNumber(value, decimals = 2) {
 export default function MetricsPanel({ result, isLoading }) {
   if (isLoading) {
     return (
-      <div className="metrics-panel card">
-        <div className="card-title">
-          <Activity size={16} />
-          Performance Metrics
-        </div>
-        <div className="metrics-grid">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="metric-skeleton">
-              <div className="skeleton skel-label" />
-              <div className="skeleton skel-value" />
-              <div className="skeleton skel-sub" />
-            </div>
-          ))}
-        </div>
+      <div className="box metrics-box">
+        <h3 className="d card-title">
+          <Activity size={18} />
+          Simulation Metrics
+        </h3>
+        <dl className="m skeleton-m">
+          <div className="skeleton-pill"><span>Calculating Sharpe...</span></div>
+          <div className="skeleton-pill"><span>Evaluating Drawdown...</span></div>
+          <div className="skeleton-pill"><span>Simulating Returns...</span></div>
+          <div className="skeleton-pill"><span>Analyzing Trades...</span></div>
+        </dl>
       </div>
     )
   }
 
-  if (!result) return null
+  if (!result) {
+    return (
+      <div className="box metrics-box">
+        <h3 className="d card-title">
+          <Activity size={18} />
+          Simulation Metrics
+        </h3>
+        <p className="note" style={{ marginBottom: 16 }}>
+          Run a backtest using the configuration panel to evaluate historical risk and return metrics.
+        </p>
+        <dl className="m">
+          <div><dt>Sharpe Ratio</dt><dd>—</dd></div>
+          <div><dt>Max Drawdown</dt><dd>—</dd></div>
+          <div><dt>Total Return</dt><dd>—</dd></div>
+          <div><dt>Win Rate</dt><dd>—</dd></div>
+        </dl>
+      </div>
+    )
+  }
 
   const isProfit = result.totalPnl >= 0
-  const metrics = [
-    {
-      label: 'Total Return',
-      value: formatPercent(result.totalReturnPercent),
-      colorClass: result.totalReturnPercent >= 0 ? 'positive' : 'negative',
-      icon: result.totalReturnPercent >= 0 ? TrendingUp : TrendingDown,
-    },
-    {
-      label: 'Sharpe Ratio',
-      value: formatNumber(result.sharpeRatio),
-      colorClass: 'accent',
-      icon: Scale,
-    },
-    {
-      label: 'Max Drawdown',
-      value: formatPercent(-Math.abs(result.maxDrawdownPercent)),
-      colorClass: 'negative',
-      icon: TrendingDown,
-    },
-    {
-      label: 'Win Rate',
-      value: `${formatNumber(result.winRatePercent)}%`,
-      colorClass: result.winRatePercent >= 50 ? 'positive' : 'negative',
-      icon: Target,
-      sub: `${result.winningTrades}W / ${result.losingTrades}L`,
-    },
-    {
-      label: 'Profit Factor',
-      value: formatNumber(result.profitFactor),
-      colorClass: result.profitFactor >= 1 ? 'positive' : 'negative',
-      icon: BarChart3,
-    },
-    {
-      label: 'Total P&L',
-      value: formatCurrency(result.totalPnl),
-      colorClass: isProfit ? 'positive' : 'negative',
-      icon: isProfit ? TrendingUp : TrendingDown,
-      sub: `${result.totalTrades} trades`,
-    },
-  ]
 
   return (
-    <div className="metrics-panel card animate-fade-in">
-      <div className="card-title">
-        <Activity size={16} />
-        Performance Metrics
+    <div className="box metrics-box">
+      <div className="metrics-header-row">
+        <h3 className="d card-title">
+          <Activity size={18} />
+          {result.strategy || 'Strategy'} Metrics
+        </h3>
+        <span className="symbol-pill">{result.symbol}</span>
       </div>
 
-      <div className="metrics-grid">
-        {/* Capital summary row */}
-        <div className="metrics-capital-row">
-          <div className="capital-block">
-            <span className="capital-label">Initial</span>
-            <span className="capital-value">{formatCurrency(result.initialCapital)}</span>
-          </div>
-          <ArrowRight size={18} className="capital-arrow" />
-          <div className="capital-block">
-            <span className="capital-label">Final</span>
-            <span className="capital-value">{formatCurrency(result.finalCapital)}</span>
-          </div>
-          <span className={`capital-delta ${isProfit ? 'positive' : 'negative'}`}>
-            {formatPercent(result.totalReturnPercent)}
-          </span>
+      {/* Capital summary pill */}
+      <div className="capital-bar">
+        <div className="cap-item">
+          <span className="cap-label">Initial</span>
+          <span className="cap-val">{formatCurrency(result.initialCapital)}</span>
         </div>
-
-        {/* Metric cards */}
-        {metrics.map((m) => (
-          <div key={m.label} className={`metric-card ${m.colorClass}`}>
-            <div className="metric-label">
-              <m.icon size={12} />
-              {m.label}
-            </div>
-            <div className={`metric-value ${m.colorClass}`}>{m.value}</div>
-            {m.sub && <div className="metric-sub">{m.sub}</div>}
-          </div>
-        ))}
+        <ArrowRight size={18} />
+        <div className="cap-item">
+          <span className="cap-label">Final</span>
+          <span className="cap-val">{formatCurrency(result.finalCapital)}</span>
+        </div>
+        <div className={`cap-pnl ${isProfit ? 'green' : 'red'}`}>
+          {formatCurrency(result.totalPnl)} ({formatPercent(result.totalReturnPercent)})
+        </div>
       </div>
+
+      {/* The iconic .m metric pill list */}
+      <dl className="m">
+        <div>
+          <dt>Sharpe Ratio</dt>
+          <dd>{formatNumber(result.sharpeRatio)}</dd>
+        </div>
+        <div>
+          <dt>Max Drawdown</dt>
+          <dd>{formatPercent(-Math.abs(result.maxDrawdownPercent))}</dd>
+        </div>
+        <div>
+          <dt>Total Return</dt>
+          <dd>{formatPercent(result.totalReturnPercent)}</dd>
+        </div>
+        <div>
+          <dt>Win Rate ({result.winningTrades}W / {result.losingTrades}L)</dt>
+          <dd>{formatNumber(result.winRatePercent)}%</dd>
+        </div>
+        <div>
+          <dt>Profit Factor</dt>
+          <dd>{formatNumber(result.profitFactor)}</dd>
+        </div>
+        <div>
+          <dt>Total Trades Executed</dt>
+          <dd>{result.totalTrades}</dd>
+        </div>
+      </dl>
     </div>
   )
 }
