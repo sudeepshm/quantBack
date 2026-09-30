@@ -15,6 +15,9 @@ const DEFAULT_STRATEGY_PARAMS = {
   'halloween-effect': { entryMonth: 11, exitMonth: 5 },
   'bollinger-bands': { period: 20, stdDevMultiplier: 2.0 },
   'day-of-the-week': { entryDayOfWeek: 2, exitDayOfWeek: 5 },
+  'donchian-channel': { entryPeriod: 20, exitPeriod: 10 },
+  'macd': { fastPeriod: 12, slowPeriod: 26, signalPeriod: 9 },
+  'rsi': { period: 14, oversoldThreshold: 30, overboughtThreshold: 70 },
 }
 
 const DEFAULT_VALUES = {
@@ -110,6 +113,21 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
       return
     }
 
+    if (form.strategy === 'donchian-channel' && (form.entryPeriod < 2 || form.exitPeriod < 1)) {
+      setError('Entry period must be at least 2 and exit period at least 1')
+      return
+    }
+
+    if (form.strategy === 'macd' && Number(form.fastPeriod) >= Number(form.slowPeriod)) {
+      setError('MACD fast period must be strictly less than slow period')
+      return
+    }
+
+    if (form.strategy === 'rsi' && Number(form.oversoldThreshold) >= Number(form.overboughtThreshold)) {
+      setError('RSI oversold threshold must be strictly less than overbought threshold')
+      return
+    }
+
     try {
       await onSubmit(form, csvFile)
     } catch (err) {
@@ -162,6 +180,9 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
                 <option value="halloween-effect">The Halloween Effect / Sell in May (Quantpedia #49)</option>
                 <option value="bollinger-bands">Bollinger Bands Mean Reversion (Quantpedia #22 & #63)</option>
                 <option value="day-of-the-week">Day-of-the-Week / Weekend Effect (Quantpedia #16)</option>
+                <option value="donchian-channel">Donchian Channel Breakout (Turtle Trading - Quantpedia #28)</option>
+                <option value="macd">MACD Trend Following Crossover (Quantpedia #73)</option>
+                <option value="rsi">Relative Strength Index (RSI) Reversal (Quantpedia #68)</option>
               </>
             )}
           </select>
@@ -538,6 +559,113 @@ export default function BacktestForm({ onSubmit, isLoading, strategies }) {
                 <option value={4}>Thursday</option>
                 <option value={5}>Friday</option>
               </select>
+            </div>
+          </>
+        )}
+
+        {form.strategy === 'donchian-channel' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-entry-period">Entry Channel Period (High)</label>
+              <input
+                id="bf-entry-period"
+                name="entryPeriod"
+                type="number"
+                min="2"
+                value={form.entryPeriod ?? 20}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-exit-period">Exit Channel Period (Low)</label>
+              <input
+                id="bf-exit-period"
+                name="exitPeriod"
+                type="number"
+                min="1"
+                value={form.exitPeriod ?? 10}
+                onChange={handleChange}
+              />
+            </div>
+          </>
+        )}
+
+        {form.strategy === 'macd' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-fast-ema">Fast EMA Period</label>
+              <input
+                id="bf-fast-ema"
+                name="fastPeriod"
+                type="number"
+                min="1"
+                value={form.fastPeriod ?? 12}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-slow-ema">Slow EMA Period</label>
+              <input
+                id="bf-slow-ema"
+                name="slowPeriod"
+                type="number"
+                min="2"
+                value={form.slowPeriod ?? 26}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-signal-ema">Signal EMA Period</label>
+              <input
+                id="bf-signal-ema"
+                name="signalPeriod"
+                type="number"
+                min="1"
+                value={form.signalPeriod ?? 9}
+                onChange={handleChange}
+              />
+            </div>
+          </>
+        )}
+
+        {form.strategy === 'rsi' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="bf-rsi-period">RSI Period</label>
+              <input
+                id="bf-rsi-period"
+                name="period"
+                type="number"
+                min="2"
+                value={form.period ?? 14}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-rsi-oversold">Oversold Threshold (Buy)</label>
+              <input
+                id="bf-rsi-oversold"
+                name="oversoldThreshold"
+                type="number"
+                step="1"
+                min="5"
+                max="45"
+                value={form.oversoldThreshold ?? 30}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="bf-rsi-overbought">Overbought Threshold (Sell)</label>
+              <input
+                id="bf-rsi-overbought"
+                name="overboughtThreshold"
+                type="number"
+                step="1"
+                min="55"
+                max="95"
+                value={form.overboughtThreshold ?? 70}
+                onChange={handleChange}
+              />
             </div>
           </>
         )}
