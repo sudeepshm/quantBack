@@ -242,6 +242,9 @@ Each package has a specific responsibility:
   * **The Halloween Effect / Sell in May (Quantpedia #49)**: Bouman & Jacobsen (2002) winter vs summer equity seasonality.
   * **Bollinger Bands Mean Reversion (Quantpedia #22 & #63)**: John Bollinger (2001) / Leung & Chong (2003) volatility envelope mean reversion.
   * **Day-of-the-Week / Weekend Effect (Quantpedia #16)**: French (1980) & Gibbons & Hess (1981) intra-week seasonality.
+  * **Donchian Channel Breakout (Quantpedia #28)**: Richard Donchian (1960) & Curtis Faith (2007) classic Turtle Trading channel breakout.
+  * **MACD Trend Following Crossover (Quantpedia #73)**: Gerald Appel (1979) moving average convergence divergence golden & death cross.
+  * **Relative Strength Index (RSI) Reversal (Quantpedia #68)**: J. Welles Wilder Jr. (1978) 14-period smoothed momentum & mean-reversion.
 * **Multi-Asset Strategies**:
   * **Dual Momentum (Quantpedia #35)**: Gary Antonacci (2012) relative & absolute momentum asset rotation.
   * **Pairs Trading (Quantpedia #51)**: Gatev, Goetzmann, Rouwenhorst (2006) normalized distance statistical arbitrage.
