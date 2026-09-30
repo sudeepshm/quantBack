@@ -35,6 +35,9 @@ public class BacktestRequestDto {
     private double stdDevMultiplier;
     private int entryDayOfWeek;
     private int exitDayOfWeek;
+    private int entryPeriod;
+    private int exitPeriod;
+    private int signalPeriod;
 
     // Risk controls
     private double stopLossPercent;
@@ -128,6 +131,15 @@ public class BacktestRequestDto {
 
     public int getExitDayOfWeek() { return exitDayOfWeek; }
     public void setExitDayOfWeek(int exitDayOfWeek) { this.exitDayOfWeek = exitDayOfWeek; }
+
+    public int getEntryPeriod() { return entryPeriod; }
+    public void setEntryPeriod(int entryPeriod) { this.entryPeriod = entryPeriod; }
+
+    public int getExitPeriod() { return exitPeriod; }
+    public void setExitPeriod(int exitPeriod) { this.exitPeriod = exitPeriod; }
+
+    public int getSignalPeriod() { return signalPeriod; }
+    public void setSignalPeriod(int signalPeriod) { this.signalPeriod = signalPeriod; }
 
     public Map<String, Object> getExtraParams() { return extraParams; }
     public void setExtraParams(Map<String, Object> extraParams) { this.extraParams = extraParams; }

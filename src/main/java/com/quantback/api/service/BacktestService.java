@@ -141,6 +141,23 @@ public class BacktestService {
                             req.getEntryDayOfWeek() > 0 ? req.getEntryDayOfWeek() : 2,
                             req.getExitDayOfWeek() > 0 ? req.getExitDayOfWeek() : 5
                     );
+            case "donchian-channel", "donchian_channel", "donchian", "turtle" ->
+                    new DonchianChannelStrategy(
+                            req.getEntryPeriod() > 1 ? req.getEntryPeriod() : 20,
+                            req.getExitPeriod() >= 1 ? req.getExitPeriod() : 10
+                    );
+            case "macd", "moving_average_convergence_divergence", "macd-trend" ->
+                    new MacdStrategy(
+                            req.getFastPeriod() > 0 ? req.getFastPeriod() : 12,
+                            req.getSlowPeriod() > 0 ? req.getSlowPeriod() : 26,
+                            req.getSignalPeriod() > 0 ? req.getSignalPeriod() : 9
+                    );
+            case "rsi", "relative-strength-index", "relative_strength_index", "wilder-rsi" ->
+                    new RsiStrategy(
+                            req.getPeriod() > 1 ? req.getPeriod() : 14,
+                            req.getOversoldThreshold() > 0 ? req.getOversoldThreshold() : 30.0,
+                            req.getOverboughtThreshold() > 0 ? req.getOverboughtThreshold() : 70.0
+                    );
             default -> throw new IllegalArgumentException("Unknown strategy: " + req.getStrategy());
         };
     }

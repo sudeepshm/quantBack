@@ -195,6 +195,41 @@ public class BacktestController {
                                 Map.of("name", "entryDayOfWeek", "label", "Entry Day (1=Mon..7=Sun)", "default", 2, "min", 1, "max", 7),
                                 Map.of("name", "exitDayOfWeek", "label", "Exit Day (1=Mon..7=Sun)", "default", 5, "min", 1, "max", 7)
                         )
+                ),
+                Map.of(
+                        "id", "donchian-channel",
+                        "name", "Donchian Channel Breakout (Turtle Trading - Quantpedia #28)",
+                        "category", "Trend Following",
+                        "citation", "Richard Donchian (1960) & Curtis Faith (2007) - The Way of the Turtle",
+                        "description", "Classic Turtle Trading System: buys when close breaks above the highest high of the entry period; exits when close drops below the lowest low of the exit period.",
+                        "params", List.of(
+                                Map.of("name", "entryPeriod", "label", "Entry Channel Period", "default", 20, "min", 2),
+                                Map.of("name", "exitPeriod", "label", "Exit Channel Period", "default", 10, "min", 1)
+                        )
+                ),
+                Map.of(
+                        "id", "macd",
+                        "name", "MACD Trend Following Crossover (Quantpedia #73)",
+                        "category", "Momentum / Trend Following",
+                        "citation", "Gerald Appel (1979) - Systems and Forecasts",
+                        "description", "Generates buy signals when the MACD line crosses above the 9-period Signal Line (bullish momentum); sells on bearish crossover below the Signal Line.",
+                        "params", List.of(
+                                Map.of("name", "fastPeriod", "label", "Fast EMA Period", "default", 12, "min", 1),
+                                Map.of("name", "slowPeriod", "label", "Slow EMA Period", "default", 26, "min", 2),
+                                Map.of("name", "signalPeriod", "label", "Signal EMA Period", "default", 9, "min", 1)
+                        )
+                ),
+                Map.of(
+                        "id", "rsi",
+                        "name", "Relative Strength Index (RSI) Reversal (Quantpedia #68)",
+                        "category", "Momentum / Mean Reversion",
+                        "citation", "J. Welles Wilder Jr. (1978) - New Concepts in Technical Trading Systems",
+                        "description", "Uses Wilder's smoothed 14-period RSI: buys oversold pullbacks (RSI <= 30) or rebounds, sells overbought extensions (RSI >= 70) or roll-overs.",
+                        "params", List.of(
+                                Map.of("name", "period", "label", "RSI Period", "default", 14, "min", 2),
+                                Map.of("name", "oversoldThreshold", "label", "Oversold Threshold (Buy)", "default", 30.0, "min", 5.0),
+                                Map.of("name", "overboughtThreshold", "label", "Overbought Threshold (Sell)", "default", 70.0, "min", 50.0)
+                        )
                 )
         ));
     }
