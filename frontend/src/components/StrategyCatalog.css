@@ -1,0 +1,405 @@
+/* StrategyCatalog.css - Neo-brutalist Quantitative Library Theme */
+
+.strategy-catalog-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header Banner */
+.catalog-header-card {
+  padding: 1.75rem 2rem;
+  background: var(--bg-card, #ffffff);
+  border: 3px solid var(--border-color, #111111);
+  box-shadow: 4px 4px 0px var(--border-color, #111111);
+}
+
+.catalog-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.6rem;
+  background: var(--accent-yellow, #ffdf00);
+  color: #111111;
+  border: 2px solid #111111;
+  margin-bottom: 0.75rem;
+}
+
+.catalog-title {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--text-primary, #111111);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.catalog-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary, #555555);
+  margin: 0;
+  max-width: 800px;
+  line-height: 1.5;
+}
+
+/* Filter Toolbar */
+.catalog-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card, #ffffff);
+  border: 3px solid var(--border-color, #111111);
+  box-shadow: 4px 4px 0px var(--border-color, #111111);
+}
+
+.category-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.category-pill {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--bg-surface, #f5f5f5);
+  color: var(--text-primary, #111111);
+  border: 2px solid var(--border-color, #111111);
+  box-shadow: 2px 2px 0px var(--border-color, #111111);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.category-pill:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--border-color, #111111);
+}
+
+.category-pill.active {
+  background: var(--accent-blue, #0052ff);
+  color: #ffffff;
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--border-color, #111111);
+}
+
+/* Search Bar */
+.catalog-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 280px;
+  flex: 1;
+  max-width: 380px;
+}
+
+.catalog-search-input {
+  width: 100%;
+  padding: 0.45rem 2rem 0.45rem 2.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 2px solid var(--border-color, #111111);
+  background: var(--bg-input, #ffffff);
+  color: var(--text-primary, #111111);
+  outline: none;
+}
+
+.catalog-search-input:focus {
+  border-color: var(--accent-blue, #0052ff);
+  box-shadow: 2px 2px 0px var(--accent-blue, #0052ff);
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.65rem;
+  color: var(--text-secondary, #777777);
+  pointer-events: none;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-secondary, #777777);
+  cursor: pointer;
+  padding: 0.2rem;
+}
+
+/* Strategy Grid */
+.strategy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Strategy Card */
+.strategy-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  background: var(--bg-card, #ffffff);
+  border: 3px solid var(--border-color, #111111);
+  box-shadow: 4px 4px 0px var(--border-color, #111111);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.strategy-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--border-color, #111111);
+}
+
+.card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.category-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  background: var(--bg-surface, #ececec);
+  color: var(--text-primary, #111111);
+  border: 1.5px solid var(--border-color, #111111);
+}
+
+.quantpedia-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  background: #ff5722;
+  color: #ffffff;
+  border: 1.5px solid #111111;
+}
+
+.strategy-card-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-primary, #111111);
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Citation Box */
+.citation-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-surface, #f9f9f9);
+  border-left: 3px solid var(--accent-blue, #0052ff);
+  margin-bottom: 0.75rem;
+}
+
+.citation-icon {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  color: var(--accent-blue, #0052ff);
+}
+
+.citation-text {
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--text-secondary, #555555);
+  line-height: 1.3;
+}
+
+/* Description */
+.strategy-card-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #444444);
+  line-height: 1.45;
+  margin: 0 0 0.85rem 0;
+  flex-grow: 1;
+}
+
+/* Formula Block */
+.formula-block {
+  background: var(--bg-surface, #222222);
+  color: var(--code-fg, #a5d6a7);
+  padding: 0.5rem 0.7rem;
+  border: 1.5px solid var(--border-color, #111111);
+  margin-bottom: 0.85rem;
+}
+
+.formula-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #ffb74d;
+  margin-bottom: 0.2rem;
+}
+
+.formula-code {
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  display: block;
+  word-break: break-all;
+}
+
+/* Meta Row */
+.strategy-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-top: 1px dashed var(--border-color, #cccccc);
+  border-bottom: 1px dashed var(--border-color, #cccccc);
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.meta-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary, #777777);
+}
+
+.meta-value {
+  font-weight: 700;
+  color: var(--text-primary, #111111);
+}
+
+.risk-tag {
+  color: #00875a;
+}
+
+/* Params Preview */
+.params-preview {
+  margin-bottom: 1rem;
+}
+
+.params-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary, #777777);
+  margin-bottom: 0.35rem;
+}
+
+.param-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.param-chip {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.45rem;
+  background: var(--bg-surface, #f0f0f0);
+  border: 1px solid var(--border-color, #dddddd);
+  color: var(--text-primary, #333333);
+}
+
+/* Action Footer */
+.card-action-footer {
+  margin-top: auto;
+}
+
+.btn-launch-strategy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  background: var(--btn-primary-bg, #0052ff);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  border: 2px solid var(--border-color, #111111);
+  box-shadow: 3px 3px 0px var(--border-color, #111111);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-launch-strategy:hover {
+  background: #003ecb;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px var(--border-color, #111111);
+}
+
+.btn-launch-strategy:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--border-color, #111111);
+}
+
+/* Empty Catalog State */
+.empty-catalog {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: var(--bg-card, #ffffff);
+  border: 3px solid var(--border-color, #111111);
+  box-shadow: 4px 4px 0px var(--border-color, #111111);
+}
+
+.empty-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-secondary, #555555);
+  margin-bottom: 1rem;
+}
+
+.btn-reset-filters {
+  padding: 0.5rem 1.25rem;
+  background: var(--accent-yellow, #ffdf00);
+  color: #111111;
+  font-weight: 800;
+  border: 2px solid #111111;
+  box-shadow: 2px 2px 0px #111111;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .strategy-grid {
+    grid-template-columns: 1fr;
+  }
+  .catalog-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .catalog-search-wrapper {
+    max-width: 100%;
+  }
+}
