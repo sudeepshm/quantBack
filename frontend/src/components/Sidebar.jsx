@@ -7,7 +7,7 @@ const navItems = [
   { id: 'data', label: 'Data', icon: Database },
 ]
 
-export default function Sidebar({ apiStatus }) {
+export default function Sidebar({ apiStatus, activeTab = 'backtests', onTabChange }) {
   return (
     <aside className="sidebar">
       {/* Brand */}
@@ -26,7 +26,8 @@ export default function Sidebar({ apiStatus }) {
         {navItems.map((item) => (
           <button
             key={item.id}
-            className={`sidebar-nav-item ${item.id === 'backtests' ? 'active' : ''}`}
+            className={`sidebar-nav-item ${activeTab === item.id ? 'active' : ''}`}
+            onClick={() => onTabChange && onTabChange(item.id)}
           >
             <item.icon size={20} />
             <span>{item.label}</span>

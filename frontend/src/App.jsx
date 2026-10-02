@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Play, Moon, Sun, ArrowUpRight, BarChart2, ShieldCheck, Zap, Layers } from 'lucide-react'
+import { Play, Moon, Sun, ArrowUpRight, BarChart2, ShieldCheck, Zap, Layers, BookOpen } from 'lucide-react'
 import ThreeMountain from './components/ThreeMountain'
 import BacktestForm from './components/BacktestForm'
 import MetricsPanel from './components/MetricsPanel'
 import EquityChart from './components/EquityChart'
 import TradeLog from './components/TradeLog'
+import StrategyCatalog from './components/StrategyCatalog'
 import './App.css'
 
 export default function App() {
@@ -12,6 +13,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [apiStatus, setApiStatus] = useState('checking') // 'checking' | 'connected' | 'offline'
   const [strategies, setStrategies] = useState([])
+  const [activeTab, setActiveTab] = useState('backtests') // 'backtests' | 'strategies'
+  const [selectedStrategyPreset, setSelectedStrategyPreset] = useState('moving-average')
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('qb-theme') || 'light'
   })
@@ -109,6 +112,17 @@ export default function App() {
     }
   }
 
+  const handleLaunchStrategy = (strategyId) => {
+    setSelectedStrategyPreset(strategyId)
+    setActiveTab('backtests')
+    setTimeout(() => {
+      const workspaceEl = document.getElementById('workspace')
+      if (workspaceEl) {
+        workspaceEl.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 60)
+  }
+
   return (
     <>
       {/* Interactive 3D parameter surface canvas */}
@@ -125,6 +139,23 @@ export default function App() {
               <span className={`status-dot ${apiStatus === 'offline' ? 'offline' : ''}`} />
               <span>{apiStatus === 'connected' ? 'API Online' : apiStatus === 'checking' ? 'Connecting' : 'Offline Mode'}</span>
             </div>
+          </div>
+
+          <div className="nav-center" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <button
+              type="button"
+              className={`nav-link-btn ${activeTab === 'backtests' ? 'active' : ''}`}
+              onClick={() => setActiveTab('backtests')}
+            >
+              Backtests
+            </button>
+            <button
+              type="button"
+              className={`nav-link-btn ${activeTab === 'strategies' ? 'active' : ''}`}
+              onClick={() => setActiveTab('strategies')}
+            >
+              Strategies (16)
+            </button>
           </div>
 
           <div className="nav-right">
@@ -206,30 +237,58 @@ export default function App() {
       {/* Main Interactive Backtest Workspace */}
       <section className="s" id="workspace">
         <div className="wrap">
-          <h2 className="d">execute strategy simulation.</h2>
-          <p className="lead">
-            Configure your asset symbol, select a quantitative model, fine-tune execution parameters, or upload your own historical dataset.
-          </p>
-
-          <div className="workspace-grid">
-            <BacktestForm
-              onSubmit={handleRunBacktest}
-              isLoading={isLoading}
-              strategies={strategies}
-            />
-
-            <div id="simulation-results" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <MetricsPanel result={result} isLoading={isLoading} />
-              <EquityChart
-                equityCurve={result?.equityCurve}
-                isLoading={isLoading}
-                symbol={result?.symbol}
-              />
-            </div>
+          {/* Workspace View Switcher Tabs */}
+          <div className="workspace-tabs">
+            <button
+              type="button"
+              className={`workspace-tab-btn ${activeTab === 'backtests' ? 'active' : ''}`}
+              onClick={() => setActiveTab('backtests')}
+            >
+              <Play size={16} />
+              <span>Backtest Console</span>
+            </button>
+            <button
+              type="button"
+              className={`workspace-tab-btn ${activeTab === 'strategies' ? 'active' : ''}`}
+              onClick={() => setActiveTab('strategies')}
+            >
+              <BookOpen size={16} />
+              <span>Strategy Catalog</span>
+              <span className="tab-badge">16 Models</span>
+            </button>
           </div>
 
-          {result?.trades && result.trades.length > 0 && (
-            <TradeLog trades={result.trades} />
+          {activeTab === 'strategies' ? (
+            <StrategyCatalog onSelectStrategy={handleLaunchStrategy} />
+          ) : (
+            <>
+              <h2 className="d">execute strategy simulation.</h2>
+              <p className="lead">
+                Configure your asset symbol, select a quantitative model, fine-tune execution parameters, or upload your own historical dataset.
+              </p>
+
+              <div className="workspace-grid">
+                <BacktestForm
+                  onSubmit={handleRunBacktest}
+                  isLoading={isLoading}
+                  strategies={strategies}
+                  selectedStrategy={selectedStrategyPreset}
+                />
+
+                <div id="simulation-results" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  <MetricsPanel result={result} isLoading={isLoading} />
+                  <EquityChart
+                    equityCurve={result?.equityCurve}
+                    isLoading={isLoading}
+                    symbol={result?.symbol}
+                  />
+                </div>
+              </div>
+
+              {result?.trades && result.trades.length > 0 && (
+                <TradeLog trades={result.trades} />
+              )}
+            </>
           )}
         </div>
       </section>

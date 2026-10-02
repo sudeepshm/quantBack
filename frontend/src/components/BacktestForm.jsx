@@ -35,11 +35,24 @@ const DEFAULT_VALUES = {
   ...DEFAULT_STRATEGY_PARAMS['moving-average'],
 }
 
-export default function BacktestForm({ onSubmit, isLoading, strategies }) {
+export default function BacktestForm({ onSubmit, isLoading, strategies, selectedStrategy }) {
   const [form, setForm] = useState(DEFAULT_VALUES)
   const [csvFile, setCsvFile] = useState(null)
   const [error, setError] = useState(null)
   const fileRef = useRef(null)
+
+  // Sync external strategy selection (e.g. from Strategy Catalog)
+  useEffect(() => {
+    if (selectedStrategy && selectedStrategy !== form.strategy) {
+      const defaultsForStrategy = DEFAULT_STRATEGY_PARAMS[selectedStrategy] || {}
+      setForm((prev) => ({
+        ...prev,
+        strategy: selectedStrategy,
+        ...defaultsForStrategy,
+      }))
+      setError(null)
+    }
+  }, [selectedStrategy])
 
   // Find strategy params from the strategies list
   const activeStrategy = strategies?.find((s) => s.id === form.strategy)
