@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Play, Moon, Sun, ArrowUpRight, BarChart2, ShieldCheck, Zap, Layers, BookOpen } from 'lucide-react'
+import { Play, Moon, Sun, ArrowUpRight, BarChart2, ShieldCheck, Zap, Layers, BookOpen, Database } from 'lucide-react'
 import ThreeMountain from './components/ThreeMountain'
 import BacktestForm from './components/BacktestForm'
 import MetricsPanel from './components/MetricsPanel'
 import EquityChart from './components/EquityChart'
 import TradeLog from './components/TradeLog'
 import StrategyCatalog from './components/StrategyCatalog'
+import DataCatalog from './components/DataCatalog'
 import './App.css'
 
 export default function App() {
@@ -13,8 +14,10 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [apiStatus, setApiStatus] = useState('checking') // 'checking' | 'connected' | 'offline'
   const [strategies, setStrategies] = useState([])
-  const [activeTab, setActiveTab] = useState('backtests') // 'backtests' | 'strategies'
+  const [activeTab, setActiveTab] = useState('backtests') // 'backtests' | 'strategies' | 'data'
   const [selectedStrategyPreset, setSelectedStrategyPreset] = useState('moving-average')
+  const [selectedDatasetFile, setSelectedDatasetFile] = useState(null)
+  const [selectedSymbol, setSelectedSymbol] = useState(null)
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('qb-theme') || 'light'
   })
@@ -123,6 +126,20 @@ export default function App() {
     }, 60)
   }
 
+  // Launch a dataset from DataCatalog directly into BacktestForm
+  const handleLoadDataset = (datasetFile, symbol) => {
+    setSelectedDatasetFile(datasetFile)
+    if (symbol) setSelectedSymbol(symbol)
+    setActiveTab('backtests')
+
+    setTimeout(() => {
+      const workspaceEl = document.getElementById('workspace')
+      if (workspaceEl) {
+        workspaceEl.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 60)
+  }
+
   return (
     <>
       {/* Interactive 3D parameter surface canvas */}
@@ -155,6 +172,13 @@ export default function App() {
               onClick={() => setActiveTab('strategies')}
             >
               Strategies (16)
+            </button>
+            <button
+              type="button"
+              className={`nav-link-btn ${activeTab === 'data' ? 'active' : ''}`}
+              onClick={() => setActiveTab('data')}
+            >
+              Market Data
             </button>
           </div>
 
@@ -256,10 +280,21 @@ export default function App() {
               <span>Strategy Catalog</span>
               <span className="tab-badge">16 Models</span>
             </button>
+            <button
+              type="button"
+              className={`workspace-tab-btn ${activeTab === 'data' ? 'active' : ''}`}
+              onClick={() => setActiveTab('data')}
+            >
+              <Database size={16} />
+              <span>Market Datasets</span>
+              <span className="tab-badge">Presets</span>
+            </button>
           </div>
 
           {activeTab === 'strategies' ? (
             <StrategyCatalog onSelectStrategy={handleLaunchStrategy} />
+          ) : activeTab === 'data' ? (
+            <DataCatalog onLoadDataset={handleLoadDataset} />
           ) : (
             <>
               <h2 className="d">execute strategy simulation.</h2>
@@ -273,6 +308,8 @@ export default function App() {
                   isLoading={isLoading}
                   strategies={strategies}
                   selectedStrategy={selectedStrategyPreset}
+                  initialCsvFile={selectedDatasetFile}
+                  initialSymbol={selectedSymbol}
                 />
 
                 <div id="simulation-results" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>

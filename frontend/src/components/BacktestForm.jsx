@@ -35,11 +35,34 @@ const DEFAULT_VALUES = {
   ...DEFAULT_STRATEGY_PARAMS['moving-average'],
 }
 
-export default function BacktestForm({ onSubmit, isLoading, strategies, selectedStrategy }) {
+export default function BacktestForm({
+  onSubmit,
+  isLoading,
+  strategies,
+  selectedStrategy,
+  initialCsvFile,
+  initialSymbol,
+}) {
   const [form, setForm] = useState(DEFAULT_VALUES)
   const [csvFile, setCsvFile] = useState(null)
   const [error, setError] = useState(null)
   const fileRef = useRef(null)
+
+  // Sync external dataset injection (e.g. from Data Catalog)
+  useEffect(() => {
+    if (initialCsvFile) {
+      setCsvFile(initialCsvFile)
+    }
+  }, [initialCsvFile])
+
+  useEffect(() => {
+    if (initialSymbol) {
+      setForm((prev) => ({
+        ...prev,
+        symbol: initialSymbol,
+      }))
+    }
+  }, [initialSymbol])
 
   // Sync external strategy selection (e.g. from Strategy Catalog)
   useEffect(() => {
