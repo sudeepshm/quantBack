@@ -1,5 +1,6 @@
 package com.quantback.order;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -15,12 +16,21 @@ public class Order {
     private final OrderType type;
     private final int quantity;
     private final LocalDateTime timestamp;
+    private final BigDecimal price;
 
     public Order(String symbol, OrderSide side, OrderType type, int quantity, LocalDateTime timestamp) {
-        this(UUID.randomUUID().toString(), symbol, side, type, quantity, timestamp);
+        this(UUID.randomUUID().toString(), symbol, side, type, quantity, timestamp, null);
+    }
+
+    public Order(String symbol, OrderSide side, OrderType type, int quantity, LocalDateTime timestamp, BigDecimal price) {
+        this(UUID.randomUUID().toString(), symbol, side, type, quantity, timestamp, price);
     }
 
     public Order(String id, String symbol, OrderSide side, OrderType type, int quantity, LocalDateTime timestamp) {
+        this(id, symbol, side, type, quantity, timestamp, null);
+    }
+
+    public Order(String id, String symbol, OrderSide side, OrderType type, int quantity, LocalDateTime timestamp, BigDecimal price) {
         this.id = Objects.requireNonNull(id, "Order id cannot be null");
         this.symbol = Objects.requireNonNull(symbol, "Symbol cannot be null");
         this.side = Objects.requireNonNull(side, "Order side cannot be null");
@@ -30,7 +40,11 @@ public class Order {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Order quantity must be positive: " + quantity);
         }
+        if (price != null && price.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Order price must be positive if specified: " + price);
+        }
         this.quantity = quantity;
+        this.price = price;
     }
 
     public String getId() {
@@ -57,6 +71,10 @@ public class Order {
         return timestamp;
     }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -67,12 +85,13 @@ public class Order {
                 Objects.equals(symbol, order.symbol) &&
                 side == order.side &&
                 type == order.type &&
-                Objects.equals(timestamp, order.timestamp);
+                Objects.equals(timestamp, order.timestamp) &&
+                Objects.equals(price, order.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, symbol, side, type, quantity, timestamp);
+        return Objects.hash(id, symbol, side, type, quantity, timestamp, price);
     }
 
     @Override
@@ -84,6 +103,7 @@ public class Order {
                 ", type=" + type +
                 ", quantity=" + quantity +
                 ", timestamp=" + timestamp +
+                (price != null ? ", price=" + price : "") +
                 '}';
     }
 }

@@ -9,6 +9,9 @@ import com.quantback.backtest.BacktestRequest;
 import com.quantback.backtest.BacktestResult;
 import com.quantback.data.CsvMarketDataLoader;
 import com.quantback.data.MarketData;
+import com.quantback.execution.ExecutionPriceModel;
+import com.quantback.execution.ExecutionTiming;
+import com.quantback.execution.SlippageModel;
 import com.quantback.metrics.PerformanceMetrics;
 import com.quantback.portfolio.PortfolioSnapshot;
 import com.quantback.strategy.*;
@@ -62,6 +65,25 @@ public class BacktestService {
         LocalDateTime startDate = parseDate(req.getStartDate());
         LocalDateTime endDate = parseDate(req.getEndDate());
 
+        ExecutionTiming timing = "next_open".equalsIgnoreCase(req.getExecutionTiming())
+                || "next-open".equalsIgnoreCase(req.getExecutionTiming())
+                || "nextopen".equalsIgnoreCase(req.getExecutionTiming())
+                ? ExecutionTiming.NEXT_OPEN
+                : ExecutionTiming.CLOSE;
+
+        ExecutionPriceModel priceModel = switch (req.getExecutionPriceModel() != null ? req.getExecutionPriceModel().toLowerCase() : "") {
+            case "open" -> ExecutionPriceModel.OPEN;
+            case "typical" -> ExecutionPriceModel.TYPICAL;
+            case "limit" -> ExecutionPriceModel.LIMIT;
+            default -> ExecutionPriceModel.CLOSE;
+        };
+
+        SlippageModel slipModel = switch (req.getSlippageModel() != null ? req.getSlippageModel().toLowerCase() : "") {
+            case "percentage", "percent", "pct" -> SlippageModel.PERCENTAGE;
+            case "volume", "volume_share", "market_impact" -> SlippageModel.VOLUME_SHARE;
+            default -> SlippageModel.FIXED_PER_UNIT;
+        };
+
         // 5. Build and run BacktestRequest
         BacktestRequest backtestRequest = new BacktestRequest(
                 symbol,
@@ -74,7 +96,10 @@ public class BacktestService {
                 endDate,
                 req.getStopLossPercent(),
                 req.getTakeProfitPercent(),
-                req.getTrailingStopPercent()
+                req.getTrailingStopPercent(),
+                timing,
+                priceModel,
+                slipModel
         );
 
         BacktestResult result = engine.run(marketData, backtestRequest);

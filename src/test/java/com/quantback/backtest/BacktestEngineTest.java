@@ -2,6 +2,9 @@ package com.quantback.backtest;
 
 import com.quantback.data.Candle;
 import com.quantback.data.MarketData;
+import com.quantback.execution.ExecutionPriceModel;
+import com.quantback.execution.ExecutionTiming;
+import com.quantback.execution.SlippageModel;
 import com.quantback.strategy.MovingAverageStrategy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,5 +74,50 @@ class BacktestEngineTest {
         assertThat(result.getTrades()).isNotEmpty();
         assertThat(result.getMetrics()).isNotNull();
         assertThat(result.getFinalCapital()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Executes orders on next bar open when ExecutionTiming.NEXT_OPEN is configured")
+    void testNextBarOpenExecution() {
+        BacktestEngine engine = new BacktestEngine();
+
+        List<Double> prices = List.of(
+                100.0, 100.0, 100.0, 100.0,
+                110.0, 120.0, 130.0,
+                115.0, 90.0, 80.0
+        );
+
+        List<Candle> candles = new ArrayList<>();
+        LocalDateTime base = LocalDateTime.of(2026, 1, 1, 9, 15);
+        for (int i = 0; i < prices.size(); i++) {
+            BigDecimal p = BigDecimal.valueOf(prices.get(i));
+            // make open distinct from close: open = p - 2
+            candles.add(new Candle(base.plusDays(i), p.subtract(new BigDecimal("2.00")), p.add(BigDecimal.ONE), p.subtract(new BigDecimal("3.00")), p, 1000));
+        }
+        MarketData data = new MarketData("NIFTY", candles);
+
+        BacktestRequest request = new BacktestRequest(
+                "NIFTY",
+                new MovingAverageStrategy(2, 3),
+                new BigDecimal("50000.00"),
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
+                10,
+                null,
+                null,
+                0.0,
+                0.0,
+                0.0,
+                ExecutionTiming.NEXT_OPEN,
+                ExecutionPriceModel.OPEN,
+                SlippageModel.FIXED_PER_UNIT
+        );
+
+        BacktestResult result = engine.run(data, request);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTrades()).isNotEmpty();
+        // The first trade should have executed on candle timestamp > candle 4 timestamp
+        assertThat(result.getTrades().get(0).getTimestamp()).isAfter(candles.get(4).getTimestamp());
     }
 }

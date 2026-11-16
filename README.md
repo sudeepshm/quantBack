@@ -254,3 +254,18 @@ Each package has a specific responsibility:
 * **Stop-Loss (%)**: Automatically liquidates positions when drawdowns breach threshold.
 * **Take-Profit (%)**: Locks in profits when gains exceed target levels.
 * **Trailing-Stop (%)**: Dynamically tracks peak prices to protect upside while limiting drawdown.
+
+### Realistic Execution Engine Models & Timing
+* **Execution Timing**:
+  * **Immediate Close ($T$)**: Evaluates and fills on current bar close.
+  * **Next-Bar Open ($T+1$)**: Realistic execution where orders generated at bar $T$ close are executed on bar $T+1$ open.
+* **Pricing Models**:
+  * **Bar Close**: Market close price benchmark.
+  * **Bar Open**: Next-bar open execution price.
+  * **Typical Price**: $(High + Low + Close) / 3$ intraday representative price.
+  * **Limit Fills**: Strict limit orders verifying candle $High$ (for Sell) or $Low$ (for Buy) touch before execution.
+* **Slippage Models**:
+  * **Fixed per Unit**: Fixed currency amount deducted or added per unit traded.
+  * **Proportional Percentage**: Basis-point slippage computed as percentage of execution price.
+  * **Volume-Share Market Impact**: Market impact proportional to order quantity relative to candle volume.
+* **Volume Participation Rate**: Maximum volume participation threshold to constrain large orders from exceeding a percentage of bar volume.

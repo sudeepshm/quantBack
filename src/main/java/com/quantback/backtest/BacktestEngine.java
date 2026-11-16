@@ -3,6 +3,8 @@ package com.quantback.backtest;
 import com.quantback.data.Candle;
 import com.quantback.data.MarketData;
 import com.quantback.execution.ExecutionEngine;
+import com.quantback.execution.ExecutionPriceModel;
+import com.quantback.execution.ExecutionTiming;
 import com.quantback.execution.SimulatedExecutionEngine;
 import com.quantback.metrics.PerformanceMetrics;
 import com.quantback.metrics.PerformanceMetricsCalculator;
@@ -20,7 +22,8 @@ import java.util.Optional;
 /**
  * Main orchestrator of the backtesting simulation.
  * Iterates chronologically through market candles, strictly preventing look-ahead bias,
- * generating strategy signals, managing orders, simulating executions, and computing metrics.
+ * generating strategy signals, managing orders, simulating realistic executions (same-bar Close
+ * or next-bar Open, limit fills, slippage models), and computing metrics.
  */
 public class BacktestEngine {
 
@@ -57,13 +60,21 @@ public class BacktestEngine {
                 request.getTakeProfitPercent(),
                 request.getTrailingStopPercent()
         );
+
+        ExecutionPriceModel priceModel = request.getExecutionTiming() == ExecutionTiming.NEXT_OPEN
+                ? ExecutionPriceModel.OPEN
+                : request.getExecutionPriceModel();
+
         ExecutionEngine executionEngine = new SimulatedExecutionEngine(
                 request.getSlippage(),
-                request.getTransactionFee()
+                request.getTransactionFee(),
+                request.getSlippageModel(),
+                priceModel
         );
         Strategy strategy = request.getStrategy();
 
         List<Candle> candles = marketData.getCandles();
+        Order pendingOrder = null;
 
         // Chronological simulation loop
         for (int i = 0; i < candles.size(); i++) {
@@ -75,6 +86,15 @@ public class BacktestEngine {
             }
             if (request.getEndDate() != null && currentCandle.getTimestamp().isAfter(request.getEndDate())) {
                 continue;
+            }
+
+            // 0. Next-Bar Open Execution: execute pending order from bar (T-1) on current bar (T) Open
+            if (request.getExecutionTiming() == ExecutionTiming.NEXT_OPEN && pendingOrder != null) {
+                if (executionEngine.canExecute(pendingOrder, currentCandle)) {
+                    Trade trade = executionEngine.execute(pendingOrder, currentCandle);
+                    portfolio.applyTrade(trade);
+                }
+                pendingOrder = null;
             }
 
             // Zero Look-Ahead Bias: strategy only sees history up to index i
@@ -91,11 +111,20 @@ public class BacktestEngine {
                     portfolio
             );
 
-            // 3. ExecutionEngine executes order into trade
+            // 3. Execution handling
             if (orderOpt.isPresent()) {
-                Trade trade = executionEngine.execute(orderOpt.get(), currentCandle);
-                // 4. Portfolio state updated
-                portfolio.applyTrade(trade);
+                Order order = orderOpt.get();
+                if (request.getExecutionTiming() == ExecutionTiming.NEXT_OPEN) {
+                    // Stage for execution at next candle Open
+                    pendingOrder = order;
+                } else {
+                    // Immediate execution at current candle Close
+                    if (executionEngine.canExecute(order, currentCandle)) {
+                        Trade trade = executionEngine.execute(order, currentCandle);
+                        // 4. Portfolio state updated
+                        portfolio.applyTrade(trade);
+                    }
+                }
             }
 
             // 5. Record point-in-time snapshot

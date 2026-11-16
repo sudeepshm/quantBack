@@ -1,5 +1,8 @@
 package com.quantback.backtest;
 
+import com.quantback.execution.ExecutionPriceModel;
+import com.quantback.execution.ExecutionTiming;
+import com.quantback.execution.SlippageModel;
 import com.quantback.strategy.Strategy;
 
 import java.math.BigDecimal;
@@ -24,6 +27,11 @@ public class BacktestRequest {
     private final double stopLossPercent;
     private final double takeProfitPercent;
     private final double trailingStopPercent;
+
+    // Execution engine parameters
+    private final ExecutionTiming executionTiming;
+    private final ExecutionPriceModel executionPriceModel;
+    private final SlippageModel slippageModel;
 
     public BacktestRequest(
             String symbol,
@@ -56,6 +64,26 @@ public class BacktestRequest {
             double stopLossPercent,
             double takeProfitPercent,
             double trailingStopPercent) {
+        this(symbol, strategy, initialCapital, slippage, transactionFee, orderQuantity, startDate, endDate,
+                stopLossPercent, takeProfitPercent, trailingStopPercent,
+                ExecutionTiming.CLOSE, ExecutionPriceModel.CLOSE, SlippageModel.FIXED_PER_UNIT);
+    }
+
+    public BacktestRequest(
+            String symbol,
+            Strategy strategy,
+            BigDecimal initialCapital,
+            BigDecimal slippage,
+            BigDecimal transactionFee,
+            int orderQuantity,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            double stopLossPercent,
+            double takeProfitPercent,
+            double trailingStopPercent,
+            ExecutionTiming executionTiming,
+            ExecutionPriceModel executionPriceModel,
+            SlippageModel slippageModel) {
 
         this.symbol = Objects.requireNonNull(symbol, "Symbol cannot be null");
         this.strategy = Objects.requireNonNull(strategy, "Strategy cannot be null");
@@ -76,6 +104,9 @@ public class BacktestRequest {
         this.stopLossPercent = Math.max(0.0, stopLossPercent);
         this.takeProfitPercent = Math.max(0.0, takeProfitPercent);
         this.trailingStopPercent = Math.max(0.0, trailingStopPercent);
+        this.executionTiming = executionTiming != null ? executionTiming : ExecutionTiming.CLOSE;
+        this.executionPriceModel = executionPriceModel != null ? executionPriceModel : ExecutionPriceModel.CLOSE;
+        this.slippageModel = slippageModel != null ? slippageModel : SlippageModel.FIXED_PER_UNIT;
     }
 
     public String getSymbol() {
@@ -120,5 +151,17 @@ public class BacktestRequest {
 
     public double getTrailingStopPercent() {
         return trailingStopPercent;
+    }
+
+    public ExecutionTiming getExecutionTiming() {
+        return executionTiming;
+    }
+
+    public ExecutionPriceModel getExecutionPriceModel() {
+        return executionPriceModel;
+    }
+
+    public SlippageModel getSlippageModel() {
+        return slippageModel;
     }
 }

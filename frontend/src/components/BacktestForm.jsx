@@ -27,6 +27,9 @@ const DEFAULT_VALUES = {
   orderQuantity: 10,
   slippagePercent: 0.05,
   transactionFeePercent: 0.1,
+  executionTiming: 'close',
+  executionPriceModel: 'close',
+  slippageModel: 'fixed',
   stopLossPercent: 0,
   takeProfitPercent: 0,
   trailingStopPercent: 0,
@@ -732,6 +735,48 @@ export default function BacktestForm({
             value={form.transactionFeePercent}
             onChange={handleChange}
           />
+        </div>
+
+        {/* Execution Model Controls */}
+        <div className="form-group">
+          <label htmlFor="bf-timing">Execution Timing</label>
+          <select
+            id="bf-timing"
+            name="executionTiming"
+            value={form.executionTiming || 'close'}
+            onChange={handleChange}
+          >
+            <option value="close">Immediate Bar Close (T)</option>
+            <option value="next_open">Next-Bar Open (T+1) [Realistic]</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="bf-price-model">Execution Price Model</label>
+          <select
+            id="bf-price-model"
+            name="executionPriceModel"
+            value={form.executionPriceModel || 'close'}
+            onChange={handleChange}
+          >
+            <option value="close">Bar Close</option>
+            <option value="open">Bar Open</option>
+            <option value="typical">Typical Price (H+L+C)/3</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="bf-slip-model">Slippage Model</label>
+          <select
+            id="bf-slip-model"
+            name="slippageModel"
+            value={form.slippageModel || 'fixed'}
+            onChange={handleChange}
+          >
+            <option value="fixed">Fixed Per Unit</option>
+            <option value="percentage">Proportional Percentage</option>
+            <option value="volume">Volume Share Impact</option>
+          </select>
         </div>
 
         {/* Risk Controls Header */}

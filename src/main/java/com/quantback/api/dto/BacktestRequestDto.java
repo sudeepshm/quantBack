@@ -44,6 +44,11 @@ public class BacktestRequestDto {
     private double takeProfitPercent;
     private double trailingStopPercent;
 
+    // Execution configuration
+    private String executionTiming;
+    private String executionPriceModel;
+    private String slippageModel;
+
     private Map<String, Object> extraParams = new HashMap<>();
 
     public BacktestRequestDto() {}
@@ -140,6 +145,15 @@ public class BacktestRequestDto {
 
     public int getSignalPeriod() { return signalPeriod; }
     public void setSignalPeriod(int signalPeriod) { this.signalPeriod = signalPeriod; }
+
+    public String getExecutionTiming() { return executionTiming; }
+    public void setExecutionTiming(String executionTiming) { this.executionTiming = executionTiming; }
+
+    public String getExecutionPriceModel() { return executionPriceModel; }
+    public void setExecutionPriceModel(String executionPriceModel) { this.executionPriceModel = executionPriceModel; }
+
+    public String getSlippageModel() { return slippageModel; }
+    public void setSlippageModel(String slippageModel) { this.slippageModel = slippageModel; }
 
     public Map<String, Object> getExtraParams() { return extraParams; }
     public void setExtraParams(Map<String, Object> extraParams) { this.extraParams = extraParams; }
